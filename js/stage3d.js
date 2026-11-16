@@ -63,7 +63,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
   /* Estado animado pelo scroll (main.js) */
   const state = {
     x: 0, y: -2.8, z: 0, scale: 0.9, rotY: -0.35, face: 0,  // face: 0 = de lado, 1 = creme de frente para a câmera
-    spin: 1, open: 0, lidAway: 0, cream: 0, burst: 0, orbit: 1, gather: 0, float: 0, shadow: 0.16, visible: 1, offsetX: 0.95
+    spin: 1, open: 0, lidAway: 0, cream: 0, burst: 0, orbit: 1, gather: 0, sink: 0, float: 0, shadow: 0.16, visible: 1, offsetX: 0.95
   };
 
   const jarRoot = new THREE.Group(); scene.add(jarRoot);
@@ -226,7 +226,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
   let hasPointer = false, dragging = false, kneading = false, lastX = 0, lastY = 0, spinV = 0, userRot = 0, userRotX = 0;
   let touchIdx = 0, lastKnead = 0, hovered = -1, idleRot = 0, holdTimer = 0;
   let lastPX = null, lastPY = null;
-  let phase0 = 0;
+  let phase0 = 0, phaseB = 0;
   let lastSY = window.scrollY, scrollVel = 0, orbitPhase = 0, selfSpin = 0, crownRef = 0;
   const qS = new THREE.Quaternion(), Y_AXIS = new THREE.Vector3(0, 1, 0);
   const ray = new THREE.Raycaster();
@@ -315,7 +315,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
 
     // câmera: aproxima e sobe conforme "face" (mergulho no creme)
     const f = ease(state.face);
-    const camZ = (mobile ? 12.2 : 10.4) - f * (mobile ? 5.5 : 4.2);
+    const camZ = (mobile ? 12.2 : 10.4) - f * (mobile ? 3.4 : 4.2);   // no celular o creme aproxima menos (o título continua visível)
     camera.position.set(0, 1.7 + f * 1.4, camZ);
     camera.lookAt(0, 1.0 + f * 0.3, 0);
 
@@ -348,7 +348,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
     // abacates: saem da boca do pote → anel inclinado que gira → coroa frontal (ingredientes)
     const b = state.burst, g = ease(state.gather), sc = state.scale * (mobile ? 0.95 : 1);
     const mouth = new THREE.Vector3(ox, state.y + 1.32 * sc, 0);
-    const R = (mobile ? 1.65 : 2.35) * state.orbit, Rg = mobile ? 1.3 : 2.7;
+    const R = (mobile ? 1.65 : 2.35) * state.orbit, Rg = mobile ? 1.4 : 2.7, RY = mobile ? 1.0 : 0.82;   // celular: coroa mais alta, abacates mais longe do pote
     const P0 = new THREE.Vector3(), P1 = new THREE.Vector3(), P2 = new THREE.Vector3(), qT = new THREE.Quaternion(), qF = new THREE.Quaternion();
     // os abacates respondem à rolagem: rolar rápido = giram rápido; parado = giro lento
     const sy = window.scrollY, dy = sy - lastSY; lastSY = sy;
@@ -357,16 +357,25 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
     selfSpin += dt * 0.35 + scrollVel * 0.006;
     if (state.gather < 0.001) phase0 = orbitPhase;
     const rotAll = orbitPhase - phase0;   // giro comum do círculo depois que a transição começa
+    if (b < 0.001) phaseB = orbitPhase;
+    const rotB = orbitPhase - phaseB;   // giro comum da órbita depois que os abacates começam a sair
     pieces.forEach((p, i) => {
-      const raw = clamp01((b - p.delay) / 0.5);
+      // saída do pote em "trem": cada um pula para a direita do pote e entra na órbita já girando no sentido horário;
+      // quem vai mais longe sai primeiro, então ninguém cruza o outro
+      const TAUB = Math.PI * 2, EM = 0.25, ARR = 0.8, LEAD = ARR - EM;
+      const dA = (((p.ring + phaseB) % TAUB) + TAUB) % TAUB;              // quanto anda na órbita até o seu lugar
+      const joinB = (1 - dA / TAUB) * LEAD;                                // momento em que sai do pote
+      const raw = clamp01((b - joinB) / EM);                               // progresso da saída (pote -> direita)
       p.obj.visible = raw > 0.001 && state.visible > 0.01;
       if (!p.obj.visible) return;
       const e = ease(raw);
-      const a = p.ring + orbitPhase;
+      const thB = rotB + Math.min(dA, Math.max(0, b - joinB - EM) * (TAUB / LEAD));   // ângulo atual na órbita
+      const a = raw < 1 ? rotB : thB;
+      const ringAt = (ang) => new THREE.Vector3(ox + Math.cos(ang) * R * 1.15, mouth.y + 0.35 - Math.sin(ang) * 0.38 + Math.sin(t * 0.8 + i) * 0.06, Math.sin(ang) * R * 0.75);
       // alvo no anel (frente mais baixa, fundo mais alto) e na coroa frontal
-      const ring = new THREE.Vector3(ox + Math.cos(a) * R * 1.15, mouth.y + 0.35 - Math.sin(a) * 0.38 + Math.sin(t * 0.8 + i) * 0.06, Math.sin(a) * R * 0.75);
+      const ring = ringAt(a);
       const ca = p.ring - (orbitPhase - crownRef) * 0.6;   // a coroa também gira com a rolagem
-      const crown = new THREE.Vector3(ox + Math.cos(ca) * Rg * 1.1, 0.95 + (mobile ? state.y - 0.25 : 0) + Math.sin(ca) * Rg * 0.82, -0.7);
+      const crown = new THREE.Vector3(ox + Math.cos(ca) * Rg * 1.1, 0.95 + (mobile ? state.y - 0.25 : 0) + Math.sin(ca) * Rg * RY, -0.7);
       // corrente no sentido horário: todos entram pelo topo do círculo, um de cada vez, e andam juntos
       // (mesma velocidade, mesmo espaçamento) até o seu lugar; o primeiro "puxa" o próximo
       const TAU2 = Math.PI * 2, cy = 0.95 + (mobile ? state.y - 0.25 : 0);
@@ -379,18 +388,34 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
       const approach = ease(clamp01((PG - (join - APP)) / APP));   // sai da órbita e vai até a entrada
       let gi;
       if (PG < join) {
-        P2.set(ox + Math.cos(entry) * Rg * 1.1, cy + Math.sin(entry) * Rg * 0.82, crown.z);
+        P2.set(ox + Math.cos(entry) * Rg * 1.1, cy + Math.sin(entry) * Rg * RY, crown.z);
         P2.lerpVectors(ring, P2, approach); P2.z += Math.sin(Math.PI * approach) * 0.5;
         gi = approach;
       } else {
         const th = entry - Math.min(dArc, (PG - join) * V);
-        P2.set(ox + Math.cos(th) * Rg * 1.1, cy + Math.sin(th) * Rg * 0.82, crown.z);
+        P2.set(ox + Math.cos(th) * Rg * 1.1, cy + Math.sin(th) * Rg * RY, crown.z);
         gi = 1;
       }
       const sw = 0;
+      // saída para o creme: o círculo continua no sentido horário; cada abacate, ao passar pelo topo, mergulha no pote
+      let sinkK = 0;
+      if (state.sink > 0.0005) {
+        const thc = -rotAll - dArc;                                            // ângulo atual na coroa
+        const dTop = (((thc - Math.PI / 2) % TAU2) + TAU2) % TAU2;            // quanto falta (no sentido horário) até o topo
+        const sArc = state.sink * (TAU2 + 0.8);
+        if (sArc < dTop) {
+          const t2 = thc - sArc;
+          P2.set(ox + Math.cos(t2) * Rg * 1.1, cy + Math.sin(t2) * Rg * RY, crown.z);
+        } else {
+          sinkK = clamp01((sArc - dTop) / 0.8);
+          const e2 = sinkK * sinkK;
+          P2.set(ox + (0 - 0) , cy + Rg * RY, crown.z);
+          P2.lerp(new THREE.Vector3(ox, mouth.y, 0), e2);
+        }
+      }
       // curva: sai da boca, sobe, e cai no lugar
-      P0.copy(mouth).add(new THREE.Vector3(p.out.x * 0.3, 0, p.out.y * 0.3));
-      P1.copy(mouth).add(new THREE.Vector3(p.out.x * 2.2, 2.1, p.out.y * 1.2));
+      P0.copy(mouth).add(new THREE.Vector3(0.15, 0, 0.1));
+      P1.copy(mouth).add(new THREE.Vector3(R * 0.55, 1.5, 0.35));          // sobe e já puxa para a direita
       const u = 1 - e;
       v3.set(0, 0, 0).addScaledVector(P0, u * u).addScaledVector(P1, 2 * u * e).addScaledVector(P2, e * e);
       // hover: cresce, avança e mostra a polpa
@@ -401,7 +426,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
       if (!p.sm) p.sm = v3.clone(); else p.sm.lerp(v3, raw < 1 ? 1 : 0.32);
       p.obj.position.copy(p.sm);
       const pop = raw < 1 ? 1 + Math.sin(raw * Math.PI) * 0.18 : 1;   // pequeno "pulo" ao nascer
-      p.obj.scale.setScalar(p.s * sstep(0, 0.2, raw) * pop * (mobile ? 0.75 : 1) * (1 - f * 0.5) * state.visible);
+      p.obj.scale.setScalar(p.s * sstep(0, 0.2, raw) * pop * (mobile ? 0.75 : 1) * (1 - f * 0.5) * state.visible * (1 - sinkK));
       qT.setFromEuler(new THREE.Euler(-0.25 + Math.sin(t * 0.6 + i) * 0.12, -Math.cos(a) * 0.7 * (1 - gi), (i % 2 ? 0.35 : -0.35) * (1 - gi) + gi * (p.ring - Math.PI / 2) * 0.35 + sw * 0.6 * (i % 2 ? 1 : -1)));
       qT.multiply(qS.setFromAxisAngle(Y_AXIS, (selfSpin + i * 0.8 + gi * Math.PI * 2) * (i % 2 ? 1 : -1)));
       p.obj.quaternion.slerpQuaternions(p.q0, qT, e);

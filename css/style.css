@@ -10,7 +10,7 @@
   --off:#F8F5F1; --paper:#FFFFFF; --sage:#D1D5BB;
   --grad:linear-gradient(135deg,#008575 0%,#3FA897 38%,#A7DED4 72%,#D1D5BB 100%);
   --ink:#404040; --ink-soft:#6B6B6B; --line:rgba(64,64,64,.14);
-  --sky:#E2E3E0;
+  --sky:#ECE1D1;
   --f-display:"Playfair Display", Georgia, serif;
   --f-text:"Montserrat", system-ui, sans-serif;
   --f-label:"Montserrat", system-ui, sans-serif;
@@ -335,7 +335,7 @@ html.grabbing,html.grabbing *{cursor:grabbing!important;user-select:none}
 /* ---------- Menu mobile ---------- */
 .burger{display:none;position:relative;width:46px;height:46px;border:0;border-radius:50%;cursor:pointer;background:rgba(255,255,255,.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:inset 0 0 0 1px rgba(255,255,255,.7),0 10px 30px -20px rgba(13,59,51,.5)}
 .burger i{position:absolute;left:14px;right:14px;height:1.6px;border-radius:2px;background:var(--grafite);transition:transform .6s var(--ease),background-color .4s}
-.burger i:first-child{top:19px}.burger i:last-child{top:26px;left:20px}
+.burger i:first-child{top:19px}.burger i:last-child{top:26px}
 .menu-open .burger{background:#F8F5F1}
 .menu-open .burger i{background:var(--verde)}
 .menu-open .burger i:first-child{transform:translateY(3.5px) rotate(45deg)}
@@ -844,3 +844,291 @@ html,body{overflow-x:clip}
 .faq__head{container-type:inline-size}
 .faq__head .display{font-size:clamp(36px,16.5cqi,104px)!important;overflow-wrap:normal!important}
 @media (max-width:900px){.faq__grid{grid-template-columns:1fr!important}.faq__head .display{font-size:clamp(40px,13cqi,72px)!important}}
+
+/* Hero: folhas de abacate balançando nos cantos (o cabo fica na borda da tela) */
+.hero__leaves{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.leafg{position:absolute;will-change:transform}
+.leafg .leaf{position:absolute;display:block;height:auto;transform-origin:97% 6%;filter:drop-shadow(0 18px 24px rgba(0,60,40,.18))}
+/* canto superior direito: duas folhas penduradas, uma sobre a outra */
+.leafg--tr{right:-2vw;top:-4vh;width:26vw;height:30vw}
+.leafg--tr .leaf--a{right:0;top:0;width:24vw;rotate:-28deg;animation:leafSway 7s ease-in-out infinite}
+.leafg--tr .leaf--b{right:3vw;top:1vw;width:19vw;rotate:12deg;animation:leafSway 6s ease-in-out -2s infinite reverse}
+/* lateral esquerda: espelhadas, o cabo nasce da borda esquerda */
+.leafg--l{left:-3vw;top:52vh;width:24vw;height:24vw}
+.leafg--l .leaf{transform-origin:3% 6%}
+.leafg--l .leaf--a{left:0;top:0;width:22vw;rotate:16deg;animation:leafSwayL 8s ease-in-out infinite}
+.leafg--l .leaf--b{left:1vw;top:3vw;width:17vw;rotate:48deg;animation:leafSwayL 6.5s ease-in-out -3s infinite reverse}
+@keyframes leafSway{0%,100%{transform:rotate(0deg)}50%{transform:rotate(-6deg)}}
+@keyframes leafSwayL{0%,100%{transform:rotate(0deg)}50%{transform:rotate(5deg)}}
+@media (max-width:760px){.leafg--tr{width:46vw;top:-2svh}.leafg--tr .leaf--a{width:42vw}.leafg--tr .leaf--b{width:33vw}.leafg--l{top:58svh;width:40vw}.leafg--l .leaf--a{width:36vw}.leafg--l .leaf--b{width:28vw}}
+@media (prefers-reduced-motion:reduce){.leafg .leaf{animation:none}}
+
+/* palavra do hero: mesmo espaçamento separada em letras e inteira (sem o "pulinho" no fim da troca) */
+.hero__w,.hero__w .c{font-kerning:none;font-feature-settings:"kern" 0,"liga" 0,"clig" 0;font-variant-ligatures:none}
+
+/* menu com mais seções: espaçamento mais justo; no celular a lista cabe na tela */
+.header__nav{gap:2px!important}
+.header__nav a{padding:9px 13px!important;letter-spacing:.14em!important}
+@media (max-width:1240px){.header__nav a{padding:8px 9px!important;font-size:10.5px!important;letter-spacing:.1em!important}}
+.mnav__list a{font-size:clamp(30px,8.6vw,52px)!important;padding:7px 0!important}
+
+/* folhas reposicionadas: nunca por cima dos textos */
+.leafg--tr{right:11vw!important;top:-7vh!important;width:20vw!important;height:20vw!important}
+.leafg--tr .leaf--a{right:0!important;top:0!important;width:16vw!important;rotate:-8deg!important}
+.leafg--tr .leaf--b{right:1.5vw!important;top:.5vw!important;width:12.5vw!important;rotate:22deg!important}
+.leafg--l{left:-5.5vw!important;top:50vh!important;width:24vw!important;height:30vh!important}
+.leafg--l .leaf--a{left:0!important;top:14vh!important;width:17vw!important;rotate:-28deg!important}
+.leafg--l .leaf--b{left:.4vw!important;top:14vh!important;width:13.5vw!important;rotate:-72deg!important}
+@media (max-width:760px){.leafg--tr{right:-6vw!important;top:-3svh!important;width:44vw!important}.leafg--tr .leaf--a{width:34vw!important}.leafg--tr .leaf--b{width:27vw!important}.leafg--l{display:none}}
+
+/* folhas: desenho do cliente (menores, menos saturadas, cabo escondido na borda) */
+.leafg .leaf{filter:saturate(.62) brightness(1.04) drop-shadow(0 14px 20px rgba(40,50,30,.16))!important}
+.leafg--tr{right:19vw!important;top:-1.2vh!important;width:16vw!important;height:16vw!important}
+.leafg--tr .leaf--a{right:0!important;top:0!important;width:14vw!important;rotate:8deg!important}
+.leafg--tr .leaf--b{right:0!important;top:0!important;width:12.5vw!important;rotate:-58deg!important}
+.leafg--l{left:-1.6vw!important;top:65vh!important;width:18vw!important;height:16vw!important}
+.leafg--l .leaf--a{left:0!important;top:0!important;width:14vw!important;rotate:-77deg!important}
+.leafg--l .leaf--b{left:0!important;top:0!important;width:15vw!important;rotate:-27deg!important}
+@media (max-width:760px){.leafg--tr{right:6vw!important;top:-1svh!important;width:34vw!important}.leafg--tr .leaf--a{width:28vw!important}.leafg--tr .leaf--b{width:24vw!important}}
+
+/* menu ao rolar: logo à esquerda, links recolhidos no hambúrguer, nada colado */
+.header.is-compact{max-width:min(760px,calc(100% - 32px))!important;padding:10px 12px 10px 28px!important;grid-template-columns:auto 1fr auto!important}
+.header.is-compact .header__logo{width:118px;justify-self:start}
+.header.is-compact .header__logo .logo-h{opacity:1;transform:none;height:24px}
+.header.is-compact .header__nav{opacity:0;pointer-events:none;visibility:hidden}
+.header__nav{transition:opacity .4s var(--ease),visibility .4s}
+.header.is-compact .header__actions{gap:16px!important}
+.header.is-compact .burger{display:block!important}
+.header.is-compact .burger{width:42px;height:42px}
+.header.is-compact .burger i:first-child{top:17px}.header.is-compact .burger i:last-child{top:24px}
+.header .lang{margin-right:2px}
+.header.is-compact .header__nav{position:absolute!important;left:50%;transform:translateX(-50%)}
+.header.is-compact .header__actions{justify-self:end}
+
+/* folhas: cabo quase escondido, uma por cima da outra com sombra na de baixo */
+.leafg .leaf{transform-origin:99% 8%}
+.leafg--l .leaf{transform-origin:1% 8%}
+.leafg .leaf--a{z-index:2;filter:saturate(.62) brightness(1.05) drop-shadow(0 10px 10px rgba(30,40,20,.32)) drop-shadow(0 20px 26px rgba(30,40,20,.14))!important}
+.leafg .leaf--b{z-index:1;filter:saturate(.55) brightness(.96) drop-shadow(0 8px 14px rgba(30,40,20,.14))!important}
+.leafg--tr{top:-2.2vh!important;right:18vw!important}
+.leafg--tr .leaf--a{rotate:14deg!important}
+.leafg--tr .leaf--b{rotate:-40deg!important}
+.leafg--l{left:-1.2vw!important}
+.leafg--l .leaf--a{rotate:-50deg!important}
+.leafg--l .leaf--b{rotate:-18deg!important}
+
+/* pílula compacta: sem coluna sobrando no fim */
+.header.is-compact{grid-template-columns:auto 1fr!important;max-width:min(680px,calc(100% - 32px))!important;padding:9px 9px 9px 26px!important}
+/* menu: cartão simples embaixo da pílula (no lugar da tela cheia verde) */
+.mnav{position:fixed!important;inset:auto!important;top:84px!important;left:50%!important;right:auto!important;bottom:auto!important;
+  width:min(680px,calc(100% - 32px))!important;display:grid!important;grid-template-rows:none!important;gap:6px;padding:14px!important;border-radius:24px!important;
+  background:rgba(248,245,241,.94)!important;backdrop-filter:blur(18px) saturate(1.3);-webkit-backdrop-filter:blur(18px) saturate(1.3);color:var(--ink)!important;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.8),0 30px 60px -30px rgba(0,50,40,.4);clip-path:none!important;
+  opacity:0;visibility:hidden;transform:translate(-50%,-8px);transition:opacity .35s var(--ease),transform .5s var(--ease),visibility 0s .5s!important;z-index:49}
+.mnav::before{display:none!important}
+.menu-open .mnav{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity .35s var(--ease),transform .5s var(--ease),visibility 0s!important}
+.mnav__list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px!important;align-content:start!important}
+.mnav__list a{display:flex!important;align-items:center;gap:12px;padding:14px 16px!important;border-radius:16px;border-bottom:0!important;
+  font-family:var(--f-display);font-size:20px!important;line-height:1.1;color:var(--ink);transition:background-color .3s,color .3s}
+.mnav__list a:hover{background:rgba(0,133,117,.08);color:var(--verde)}
+.mnav__list a small{transform:none!important;font-size:10px;color:var(--verde);opacity:1}
+.mnav__foot{display:none!important}
+.menu-open .header .header__logo path{fill:var(--grafite)!important}
+.menu-open .header .lang button{color:rgba(64,64,64,.45)!important}
+.menu-open .header .lang button[aria-pressed="true"]{color:var(--ink)!important}
+.menu-open .burger{background:#F8F5F1}
+@media (max-width:760px){
+  .mnav{top:76px!important}
+  .mnav__list{grid-template-columns:1fr 1fr}
+  .mnav__foot{display:grid!important;padding:4px 2px 2px}
+  .mnav__foot .btn{width:100%;justify-content:space-between}
+  .mnav__note{display:none}
+}
+
+/* menu: cartãozinho pequeno embaixo do botão de menu */
+.mnav{width:260px!important;left:auto!important;right:auto!important;padding:10px!important;border-radius:20px!important;transform:translateY(-8px)!important}
+.menu-open .mnav{transform:translateY(0)!important}
+.mnav__list{grid-template-columns:1fr!important;gap:2px!important}
+.mnav__list a{font-size:17px!important;padding:11px 14px!important;border-radius:12px}
+@media (max-width:760px){.mnav{width:min(300px,calc(100% - 32px))!important}.mnav__list{grid-template-columns:1fr!important}}
+
+/* pílula compacta do tamanho do conteúdo, sem vão no meio */
+.header.is-compact{width:fit-content!important;max-width:calc(100% - 32px)!important;left:50%!important;right:auto!important;margin:0!important;translate:-50% 0;grid-template-columns:auto auto!important;gap:40px!important}
+
+/* menuzinho: destaque deslizante + brilho da marca no hover */
+.mnav__list{position:relative}
+.mnav__list a{position:relative;z-index:1;background:none!important;padding-left:16px!important;transition:color .35s var(--ease),padding .5s var(--ease)!important}
+.mnav__list a span{transition:transform .5s var(--ease)}
+.mnav__list a::before{content:"";position:absolute;left:14px;top:50%;width:12px;height:12px;margin-top:-6px;background:var(--verde);transform:scale(0) rotate(-90deg);transition:transform .5s var(--ease);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M12 0C12.9 7.4 16.6 11.1 24 12C16.6 12.9 12.9 16.6 12 24C11.1 16.6 7.4 12.9 0 12C7.4 11.1 11.1 7.4 12 0Z%27/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 24 24%27%3E%3Cpath d=%27M12 0C12.9 7.4 16.6 11.1 24 12C16.6 12.9 12.9 16.6 12 24C11.1 16.6 7.4 12.9 0 12C7.4 11.1 11.1 7.4 12 0Z%27/%3E%3C/svg%3E") center/contain no-repeat}
+.mnav__list a:hover{color:var(--verde)!important}
+.mnav__list a:hover::before{transform:scale(1) rotate(0deg)}
+.mnav__list a:hover span{transform:translateX(20px)}
+.mnav-pill{position:absolute;left:0;right:0;top:0;height:0;border-radius:12px;background:rgba(0,133,117,.09);box-shadow:inset 0 0 0 1px rgba(0,133,117,.12);opacity:0;pointer-events:none;transition:top .45s var(--ease),height .45s var(--ease),opacity .3s}
+.mnav__list.has-pill .mnav-pill{opacity:1}
+
+/* transição suave barra cheia -> pílula: largura animada, layout fixo (flex), logo cruzando vertical->horizontal */
+.header{left:50%!important;right:auto!important;translate:-50% 0!important;width:var(--hw-full,100%)!important;max-width:none!important;margin:0!important;display:flex!important;justify-content:space-between!important;align-items:center!important;gap:24px!important;
+  transition:width .85s var(--ease),top .85s var(--ease),padding .85s var(--ease),border-radius .85s var(--ease),background-color .6s,box-shadow .6s,backdrop-filter .6s,-webkit-backdrop-filter .6s!important}
+.header.is-compact{width:var(--hw-compact,520px)!important}
+.header__nav{position:absolute!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;transition:opacity .45s var(--ease),visibility .45s!important}
+.header__logo{width:52px;flex:none;transition:width .85s var(--ease)!important}
+.header.is-compact .header__logo{width:118px!important}
+.header__logo .logo-v{transition:opacity .45s var(--ease),transform .85s var(--ease)!important;transform-origin:left center}
+.header__logo .logo-h{transition:opacity .55s var(--ease) .15s,transform .85s var(--ease)!important;transform-origin:left center}
+.header.is-compact .header__logo .logo-v{opacity:0!important;transform:scale(.55)!important}
+.header__logo .logo-h{opacity:0;transform:translateY(6px) scale(.9)}
+.header.is-compact .header__logo .logo-h{opacity:1!important;transform:none!important}
+.header__actions{flex:none}
+.header .burger{transition:opacity .4s var(--ease),transform .6s var(--ease)}
+@media (min-width:1025px){.header:not(.is-compact) .burger{display:block!important;opacity:0;transform:scale(.6);width:0!important;margin-left:-16px;pointer-events:none}}
+
+.texture__title .tw{display:inline-block;transform-origin:0 100%;will-change:transform}
+
+/* Essência: 3 linhas definidas, "Let Me Be," nunca separado da vírgula */
+.statement--big{text-wrap:wrap!important;font-size:clamp(28px,3.5vw,68px)!important}
+.statement--big .nw{white-space:nowrap}
+.essence__grid > div{max-width:1400px!important}
+@media (max-width:900px){.statement--big br.d{display:none}.statement--big{text-wrap:balance!important}}
+
+/* rota: a linha termina na última bolinha */
+.ess-route ol::before,.ess-route ol::after{top:13px!important;bottom:var(--line-end,10px)!important}
+
+/* celular: folha perto do logo (sem cobrir o idioma) */
+@media (max-width:760px){.leafg--tr{right:auto!important;left:22vw!important;top:-2svh!important;width:30vw!important;height:30vw!important}.leafg--tr .leaf--a{width:24vw!important}.leafg--tr .leaf--b{width:20vw!important}}
+
+/* celular: mesma sequência do computador (zoom no frasco -> branco -> garotas) */
+@media (max-width:760px){
+  .rail{position:relative;z-index:6;margin-top:-100vh;margin-top:-100svh;background:transparent!important}
+  .rail__pin{height:100vh!important;height:100svh!important;background:#F8F5F1;padding:13svh 0 7svh!important;gap:4svh!important}
+  .rail__track{overflow:visible!important;scroll-snap-type:none!important;padding-right:30vw!important}
+  .card{flex:0 0 62vw!important}
+  .card.is-open{flex-basis:78vw!important}
+  .rail__title{padding:0 16px}
+  /* Passo Único em uma tela: frasco ao fundo, texto embaixo sobre o escuro */
+  .pro{min-height:100vh!important;min-height:100svh!important;height:100svh;display:block!important;padding:0!important}
+  .pro::before{height:100%!important}
+  .pro__canvas{position:absolute!important;inset:0!important;height:100%!important;margin:0!important}
+  .pro__content{position:absolute!important;left:0;right:0;bottom:0;margin:0!important;padding:22svh 16px 30px!important;
+    background:linear-gradient(180deg,transparent,rgba(6,27,24,.92) 45%)!important;gap:16px!important}
+  .pro__specs{display:none!important}
+  .pro__lead{font-size:14px!important}
+  .pro__marquee{height:100%!important}
+}
+
+@media (max-width:760px){.pro__content{background:none!important;padding:0 16px 28px!important}.pro__lead{font-size:13.5px!important;line-height:1.55!important}}
+
+/* manifesto no celular: quebras escritas à mão (br.m), linhas curtas e do mesmo tamanho */
+.manifesto__line br.m{display:none}
+@media (max-width:760px){
+  .manifesto__line br.m{display:inline}
+  .manifesto__line br.d{display:none}
+  .manifesto__line{font-size:clamp(30px,8.8vw,44px)!important;text-wrap:wrap!important;line-height:1.1!important}
+}
+
+/* celular: cartões de ingredientes alinhados à esquerda, com respiro; título e textura com mais ar */
+@media (max-width:900px){
+  .orbit__item .chip,.orbit__item--a .chip,.orbit__item--b .chip,.orbit__item--c .chip,.orbit__item--d .chip,
+  .orbit .chip[aria-expanded="true"]{padding:22px 22px 24px!important;text-align:left!important;justify-items:start}
+  .orbit .chip .chip__more,.orbit .chip[aria-expanded="true"] .chip__more{max-width:none!important;margin:12px 0 0!important;font-size:13.5px!important;line-height:1.55!important;text-align:left!important}
+  .orbit .chip b{display:block;margin-top:6px;line-height:1.05}
+  .ingredients__title{top:calc(76px + 4.5vh)!important}
+}
+@media (max-width:760px){.texture__title{top:17vh!important}}
+/* celular: cartões e título ficam na frente do 3D (os abacates passam por trás) */
+@media (max-width:900px){
+  .story > .act.ingredients{z-index:3;pointer-events:none}
+  .story > .act.ingredients .chip{pointer-events:auto}
+  .story > .act.ingredients .orbit{pointer-events:auto}
+}
+/* Linhas no celular: brilho à esquerda (como no computador), foto, nome e seta numa linha só */
+@media (max-width:900px){
+  .prow{grid-template-columns:18px 72px minmax(0,1fr) 38px!important;grid-template-areas:"n thumb name go" "n thumb tag go"!important;gap:6px 14px!important;padding:14px 2px!important;align-items:center}
+  .prow__n{display:grid!important;grid-area:n;width:18px;height:18px;align-self:center}
+  .prow__n svg{width:14px;height:14px}
+  .prow__thumb{width:72px!important;height:88px!important;border-radius:14px}
+  .prow__name{font-size:clamp(22px,6.4vw,27px)!important;line-height:1.04!important;letter-spacing:-.015em;text-wrap:balance;align-self:end}
+  .prow__tag{font-size:10px;letter-spacing:.16em;align-self:start;margin-top:2px}
+  .prow__go{width:38px!important;height:38px!important;font-size:13px}
+}
+
+/* celular: cartões brancos; fechado = número + nome + "+", aberto (na sua vez) = texto completo */
+@media (max-width:900px){
+  .orbit__list{align-items:flex-end;gap:10px!important;transition:translate .8s var(--ease)}
+  .orbit__item{flex:0 0 50vw!important;transition:flex-basis .8s var(--ease)}
+  .orbit__item:has(.chip[aria-expanded="true"]){flex-basis:80vw!important}
+  .orbit .chip,.orbit__item .chip,.orbit__item--a .chip,.orbit__item--b .chip,.orbit__item--c .chip,.orbit__item--d .chip,.orbit .chip[aria-expanded="true"]{
+    position:relative;display:block;width:100%;height:auto!important;padding:18px 52px 18px 20px!important;text-align:left!important;border-radius:22px!important;
+    background:#FBF9F6!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+    box-shadow:0 22px 44px -26px rgba(0,70,60,.45),inset 0 0 0 1px rgba(0,133,117,.12)!important;transition:box-shadow .6s var(--ease),padding .6s var(--ease)}
+  .orbit .chip[aria-expanded="true"]{padding:22px 56px 22px 22px!important;box-shadow:0 30px 60px -28px rgba(0,70,60,.55),inset 0 0 0 1px rgba(0,133,117,.28)!important}
+  .orbit .chip small{display:block;font-size:11px;letter-spacing:.18em;color:var(--verde)}
+  .orbit .chip b{display:block;margin-top:6px;font-size:21px!important;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:font-size .6s var(--ease)}
+  .orbit .chip[aria-expanded="true"] b{font-size:27px!important}
+  .orbit .chip span,.orbit .chip .chip__more{display:block;max-height:0!important;opacity:0!important;overflow:hidden;margin:0!important;
+    transition:max-height .7s var(--ease),opacity .4s,margin .7s var(--ease)!important}
+  .orbit .chip[aria-expanded="true"] span{max-height:40px!important;opacity:1!important;margin-top:4px!important;font-size:13px;color:var(--ink-soft);transition-delay:.15s!important}
+  .orbit .chip[aria-expanded="true"] .chip__more{max-height:200px!important;opacity:1!important;margin-top:12px!important;color:var(--ink)!important;font-size:13.5px!important;line-height:1.55!important;transition-delay:.2s!important}
+  .orbit .chip__plus,.orbit .chip .chip__plus{display:block!important;position:absolute!important;right:16px;top:18px;margin:0!important;width:26px;height:26px;
+    background-color:#E7EBDD!important;box-shadow:inset 0 0 0 1px rgba(0,133,117,.45)!important}
+}
+
+/* celular: respiros mais curtos entre Linhas e Essência; botões todos com a mesma altura (mais encorpados) */
+@media (max-width:760px){
+  .lines{padding-bottom:56px!important}
+  .essence{padding-top:72px!important;padding-bottom:72px!important}
+  .essence .statement--big{margin-bottom:28px!important}
+  .essence__cols{gap:16px!important}
+  .essence .essence__media{margin-top:56px!important}
+  .btn{min-height:60px;padding:8px 8px 8px 24px!important;font-size:14px!important}
+  .btn .arrow{width:44px!important;height:44px!important}
+  .header .btn,.header__cta,.pcard .btn{min-height:0}
+}
+/* celular: título e cartões dos ingredientes presos à tela (não sobem quando a cena termina) */
+@media (max-width:900px){
+  .ingredients__title{position:fixed!important}
+  .orbit{position:fixed!important}
+}
+/* foto da campanha: no celular o logo é o em pé, alinhado à esquerda com a frase */
+.wordmark__logo--v{display:none}
+@media (max-width:760px){
+  .wordmark__logo--h{display:none!important}
+  .wordmark__logo--v{display:block;left:var(--pad)!important;right:auto!important;width:36vw!important;bottom:calc(8svh + 92px)!important}
+}
+
+/* seta única do site (CTAs e lista de linhas): traço fino, cantos arredondados */
+.ic-arr{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;display:block}
+.btn--lg .ic-arr{width:17px;height:17px}
+.btn--sm .ic-arr{width:13px;height:13px}
+.prow__go .ic-arr{width:16px;height:16px}
+/* hambúrguer: dois traços iguais */
+.burger i,.burger i:last-child{left:14px!important;right:14px!important}
+.header.is-compact .burger i,.header.is-compact .burger i:last-child{left:13px!important;right:13px!important}
+/* Linhas no celular: brilho e seta com respiro da borda (inclusive no destaque verde) */
+@media (max-width:900px){.prow{padding:14px 14px!important}}
+
+/* hero no celular: o bloco (frase, palavra, pote, frase, CTA) mantém os mesmos respiros em qualquer altura de tela;
+   em telas mais altas o conjunto só se centraliza, sem abrir buracos entre os itens */
+@media (max-width:760px){
+  .hero{--hoff:clamp(-24px,calc((100svh - 812px) / 2),90px)}
+  .hero__kicker{top:calc(97px + var(--hoff))!important}
+  .hero__title{top:calc(226px + var(--hoff))!important}
+  .hero__side{bottom:calc(169px + var(--hoff) * .2)!important}
+  .hero__cta{bottom:calc(41px + var(--hoff) * .2)!important}
+}
+/* hover dos botões: o preenchimento cobre o botão inteiro, mesmo nos botões largos do celular */
+.btn:hover::before{transform:translateY(-50%) scale(36)!important}
+/* título da textura: as máscaras das linhas não cortam as letras que descem (q, p, ç) */
+.texture__title > *{padding-bottom:.16em;margin-bottom:-.16em}
+@media (max-width:760px){.texture__title{top:20svh!important}}
+
+/* a loura: último cartão do trilho; a foto da campanha fica por cima do trilho e abre a partir dele */
+.card--wm .card__img{background:transparent!important}
+.rail__pin .wordmark__frame{position:absolute!important;inset:0!important;height:auto!important;z-index:4;border-radius:0!important;margin:0;
+  clip-path:inset(50% 50% 50% 50%);pointer-events:none;will-change:clip-path}
+.rail__pin .wordmark__frame img{height:100%!important}
+/* a loura: foto fixa no cartão (sem paralaxe); a moldura da campanha nasce do tamanho do cartão */
+.card--wm .card__img{background:var(--sage)!important}
+.card--wm .card__img img{transform:none!important;object-position:50% 30%}
+.rail__pin .wordmark__frame{inset:auto!important;left:0;top:0;width:100%;height:100%!important;clip-path:none!important;visibility:hidden;overflow:hidden}
+.rail__pin .wordmark__frame img{transform:none!important;object-position:50% 30%!important}

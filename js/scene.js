@@ -141,7 +141,7 @@ export function createScene(canvas, { onProgress, onLoad } = {}) {
     if (!w || !h) return;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
-    camera.position.z = w / h < 0.9 ? 6.3 : 7.4;   // celular: frasco grande na tela
+    camera.position.z = w / h < 0.9 ? 9.2 : 7.4;   // celular: frasco inteiro acima do texto
     camera.updateProjectionMatrix();
     pMat.uniforms.uPR.value = renderer.getPixelRatio();
   }
