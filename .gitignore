@@ -1,0 +1,16 @@
+# Arquivos de trabalho do Blender (fontes 3D pesadas)
+*.blend
+*.blend1
+
+# Renders em alta resolução (o site usa as versões .webp)
+assets/campanha/*.png
+
+# Ferramentas locais
+.claude/
+__pycache__/
+*.pyc
+
+# Sistema
+.DS_Store
+Thumbs.db
+desktop.ini

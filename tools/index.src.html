@@ -1,0 +1,323 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Let Me Be · Liberdade para ser</title>
+<meta name="description" content="Let Me Be: cosméticos capilares brasileiros desde 2015. Beleza é cuidado, tecnologia e liberdade para ser quem você é.">
+<meta name="theme-color" content="#E6ECDF">
+<link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
+<link rel="preload" href="assets/fonts/PlayfairDisplay.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+<link rel="preload" href="assets/3d/jar.glb" as="fetch" crossorigin>
+</head>
+<body class="is-loading">
+
+<div class="loader" aria-hidden="true">
+  <svg class="loader__logo" viewBox="0 0 747 845">{{LOGO_V}}</svg>
+  <div class="loader__bar"><span></span></div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="header">
+  <a class="header__logo" href="#top" aria-label="Let Me Be, início">
+    <svg class="logo-v" viewBox="0 0 747 845" role="img" aria-label="Let Me Be">{{LOGO_V}}</svg>
+    <svg class="logo-h" viewBox="0 0 1923 416" aria-hidden="true">{{LOGO_H}}</svg>
+  </a>
+  <nav class="header__nav" aria-label="Principal">
+    <a href="#ritual" data-i18n="nav.ritual">Ritual</a>
+    <a href="#linhas" data-i18n="nav.lines">Linhas</a>
+    <a href="#essencia" data-i18n="nav.story">Essência</a>
+    <a href="#profissional" data-i18n="nav.pro">Profissional</a>
+  </nav>
+  <div class="header__actions">
+    <div class="lang" role="group" aria-label="Idioma / Language">
+      <button type="button" data-lang="pt" aria-pressed="true">PT</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+    <a class="btn btn--dark btn--sm header__cta" href="https://www.letmebe.com.br/collections/mascara" target="_blank" rel="noopener" tabindex="-1"><span data-i18n="hero.cta">Comprar na loja</span><i class="arrow" aria-hidden="true">↗</i></a>
+    <button class="burger" type="button" aria-expanded="false" aria-controls="mnav" data-i18n-aria="nav.open" aria-label="Abrir menu"><i></i><i></i></button>
+  </div>
+</header>
+
+<!-- Menu mobile: tela cheia sobre o gradiente da marca -->
+<div class="mnav" id="mnav" aria-hidden="true">
+  <nav class="mnav__list" aria-label="Menu">
+    <a href="#top"><small>01</small><span data-i18n="nav.home">Início</span></a>
+    <a href="#ritual"><small>02</small><span data-i18n="nav.ritual">Ritual</span></a>
+    <a href="#linhas"><small>03</small><span data-i18n="nav.lines">Linhas</span></a>
+    <a href="#essencia"><small>04</small><span data-i18n="nav.story">Essência</span></a>
+    <a href="#profissional"><small>05</small><span data-i18n="nav.pro">Profissional</span></a>
+  </nav>
+  <div class="mnav__foot">
+    <a class="btn btn--light btn--lg" href="https://www.letmebe.com.br/" target="_blank" rel="noopener"><span data-i18n="nav.store">Loja oficial</span><i class="arrow" aria-hidden="true">↗</i></a>
+    <p class="mnav__note">@letmebecosmetic</p>
+  </div>
+</div>
+
+<!-- Palco 3D fixo: o pote atravessa a primeira metade da página -->
+<div class="sky" aria-hidden="true"><div class="sky__beam"></div><div class="sky__beam sky__beam--2"></div></div>
+<canvas class="stage" aria-hidden="true"></canvas>
+<div class="texture__ring" aria-hidden="true">
+  <svg viewBox="0 0 400 400">
+    <defs>
+      <path id="ringPath" d="M10,200 A190,190 0 1,1 390,200 A190,190 0 1,1 10,200"/>
+      <marker id="ringArrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L7 5 L1 9" fill="none" stroke="#BFA777" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></marker>
+    </defs>
+    <text><textPath href="#ringPath" class="texture__ringText">Clique e arraste o mouse</textPath></text>
+    <path class="texture__arrow" d="M280.3,27.8 A190,190 0 0,1 183.4,389.3" marker-end="url(#ringArrow)"/>
+  </svg>
+</div>
+
+<main id="top">
+  <div class="story">
+
+    <!-- 1 · HERO: título gigante atrás do pote -->
+    <section class="act hero" aria-labelledby="hero-title">
+      <div class="hero__frame">
+        <h1 id="hero-title" class="hero__title" data-i18n-aria="hero.aria" aria-label="Abacate, nutrição e brilho"><span class="hero__w is-on" data-i18n="hero.w1">Abacate</span><span class="hero__w" data-i18n="hero.w2">Nutrição</span><span class="hero__w" data-i18n="hero.w3">Brilho</span></h1>
+        <div class="hero__foot">
+          <p class="hero__kicker" data-i18n="hero.kicker">Seu cabelo,<br>do seu <em>jeito.</em></p>
+          <p class="hero__meta"><b>250</b><span data-i18n="hero.meta">g · Máscara capilar<br>nutritiva</span></p>
+          <div class="hero__side">
+            <p class="hero__claim" data-i18n="hero.claim">Nutre fundo.<br>Deixa o fio <em>livre.</em></p>
+            <p class="hero__text" data-i18n="hero.text">Máscara capilar com óleo de abacate: nutrição intensa, maciez e brilho para todos os tipos de cabelo.</p>
+          </div>
+          <div class="hero__cta">
+            <span class="tag" data-i18n="hero.tag">Nova máscara de abacate</span>
+            <a class="btn btn--dark btn--lg" href="https://www.letmebe.com.br/collections/mascara" target="_blank" rel="noopener"><span data-i18n="hero.cta">Comprar na loja</span><i class="arrow" aria-hidden="true">↗</i></a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 · MANIFESTO (split esquerda/direita) -->
+    <section class="act manifesto" id="ritual" aria-labelledby="split-title">
+      <h2 id="split-title" class="manifesto__line manifesto__line--title reveal-words" data-i18n="split.title">Não é só uma<br><em>máscara.</em></h2>
+      <p class="manifesto__line manifesto__line--r reveal-words" data-i18n="man.1">É o seu momento.<br class="d">Uma pausa só sua,<br class="d">no meio da rotina.</p>
+      <p class="manifesto__line reveal-words" data-i18n="man.2">O óleo de abacate <em>envolve</em><br class="d">cada fio e devolve<br class="d">o que o dia levou.</p>
+      <p class="manifesto__line manifesto__line--r reveal-words" data-i18n="man.3">Toque macio,<br class="d">brilho que fica<br class="d">e a liberdade de ser<br class="d"><em>quem você é.</em></p>
+    </section>
+
+    <!-- 3 · INGREDIENTES: círculo em volta do pote -->
+    <section class="act ingredients" aria-labelledby="ing-title">
+      <div class="ingredients__stage">
+        <h2 id="ing-title" class="display display--md split ingredients__title" data-i18n="ing.title">Do abacate<br><em>para os seus fios.</em></h2>
+        <div class="orbit">
+          <svg class="orbit__ring" viewBox="0 0 600 600" aria-hidden="true">
+            <circle cx="300" cy="300" r="236"/>
+          </svg>
+          <ul class="orbit__list">
+            <li class="orbit__track" aria-hidden="true"><svg viewBox="0 0 600 600"><circle cx="300" cy="300" r="300"/></svg></li>
+          <li class="orbit__item orbit__item--a"><i class="orbit__dot" aria-hidden="true"></i><button class="chip" type="button" aria-expanded="false"><small>01</small><b data-i18n="ing.1t">Óleo de abacate</b><span data-i18n="ing.1p">Nutrição intensa e toque sedoso</span><em class="chip__more" data-i18n="ing.1m">Rico em ácidos graxos e vitaminas, o óleo de abacate envolve a fibra, repõe a nutrição perdida e deixa o toque macio e sedoso.</em><i class="chip__plus" aria-hidden="true"></i></button></li>
+          <li class="orbit__item orbit__item--b"><i class="orbit__dot" aria-hidden="true"></i><button class="chip" type="button" aria-expanded="false"><small>02</small><b data-i18n="ing.2t">Vitamina E</b><span data-i18n="ing.2p">Proteção no dia a dia</span><em class="chip__more" data-i18n="ing.2m">Antioxidante natural que ajuda a proteger os fios dos agressores do dia a dia, como sol, poluição e calor do secador, preservando o brilho.</em><i class="chip__plus" aria-hidden="true"></i></button></li>
+          <li class="orbit__item orbit__item--c"><i class="orbit__dot" aria-hidden="true"></i><button class="chip" type="button" aria-expanded="false"><small>03</small><b data-i18n="ing.3t">Ômega 9</b><span data-i18n="ing.3p">Maciez e flexibilidade</span><em class="chip__more" data-i18n="ing.3m">Ajuda a repor os lipídios da fibra, devolvendo flexibilidade e maciez e reduzindo o frizz dos fios ressecados.</em><i class="chip__plus" aria-hidden="true"></i></button></li>
+          <li class="orbit__item orbit__item--d"><i class="orbit__dot" aria-hidden="true"></i><button class="chip" type="button" aria-expanded="false"><small>04</small><b data-i18n="ing.4t">Brilho</b><span data-i18n="ing.4p">Fios alinhados e luminosos</span><em class="chip__more" data-i18n="ing.4m">Com a fibra nutrida e a cutícula alinhada, o fio reflete mais luz: brilho natural, movimento e aspecto saudável.</em><i class="chip__plus" aria-hidden="true"></i></button></li>
+          </ul>
+          <div class="orbit__hint" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4 · TEXTURA: título no centro e texto girando dentro do creme -->
+    <section class="act texture" aria-labelledby="tex-title">
+      <div class="texture__stage">
+        <h2 id="tex-title" class="texture__title" data-i18n="tex.big">Toque e sinta<br><em><span>a textura</span> <span>do creme.</span></em></h2>
+        <p class="sr-only" data-i18n="tex.hint">Clique e arraste no creme.</p>
+      </div>
+    </section>
+  </div>
+
+  <!-- 5 · LINHAS (verde escuro, cards, cobre o palco) -->
+  <section class="lines" id="linhas" aria-labelledby="lines-title">
+    <div class="wrap">
+      <div class="lines__head">
+        <h2 id="lines-title" class="lines__title reveal-words" data-i18n="lines.title">Para cada fio, <em>uma fórmula.</em></h2>
+      </div>
+      <ul class="plist">
+        <li><a class="prow" href="https://www.letmebe.com.br/collections/produtos-profissionais" target="_blank" rel="noopener" data-img="assets/img/dourado.webp">
+          <span class="prow__n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7.4 16.6 11.1 24 12C16.6 12.9 12.9 16.6 12 24C11.1 16.6 7.4 12.9 0 12C7.4 11.1 11.1 7.4 12 0Z"/></svg></span>
+          <span class="prow__thumb"><img src="assets/img/dourado.webp" alt="" loading="lazy"></span>
+          <span class="prow__name" data-i18n="lines.c1">Progressivas & BTX</span>
+          <span class="prow__tag" data-i18n="lines.c1tag">Tratamento</span>
+          <span class="prow__go" aria-hidden="true">↗</span>
+        </a></li>
+        <li><a class="prow" href="https://www.letmebe.com.br/collections/home-care" target="_blank" rel="noopener" data-img="assets/img/cachos.webp">
+          <span class="prow__n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7.4 16.6 11.1 24 12C16.6 12.9 12.9 16.6 12 24C11.1 16.6 7.4 12.9 0 12C7.4 11.1 11.1 7.4 12 0Z"/></svg></span>
+          <span class="prow__thumb"><img src="assets/img/cachos.webp" alt="" loading="lazy"></span>
+          <span class="prow__name" data-i18n="lines.c2">Rotina em casa</span>
+          <span class="prow__tag" data-i18n="lines.c2tag">Home care</span>
+          <span class="prow__go" aria-hidden="true">↗</span>
+        </a></li>
+        <li><a class="prow" href="https://www.letmebe.com.br/collections/my-blond-hidratacao-e-brilho-para-cabelos-loiros" target="_blank" rel="noopener" data-img="assets/img/loiro.webp">
+          <span class="prow__n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7.4 16.6 11.1 24 12C16.6 12.9 12.9 16.6 12 24C11.1 16.6 7.4 12.9 0 12C7.4 11.1 11.1 7.4 12 0Z"/></svg></span>
+          <span class="prow__thumb"><img src="assets/img/loiro.webp" alt="" loading="lazy"></span>
+          <span class="prow__name">My Blond</span>
+          <span class="prow__tag" data-i18n="lines.c3tag">Lançamento</span>
+          <span class="prow__go" aria-hidden="true">↗</span>
+        </a></li>
+        <li><a class="prow" href="https://www.letmebe.com.br/products/velvet-drops-reparador-de-pontas-30ml" target="_blank" rel="noopener" data-img="assets/img/velvet-drops.webp">
+          <span class="prow__n"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.9 7.4 16.6 11.1 24 12C16.6 12.9 12.9 16.6 12 24C11.1 16.6 7.4 12.9 0 12C7.4 11.1 11.1 7.4 12 0Z"/></svg></span>
+          <span class="prow__thumb"><img src="assets/img/velvet-drops.webp" alt="" loading="lazy"></span>
+          <span class="prow__name">Velvet Drops</span>
+          <span class="prow__tag" data-i18n="lines.c4tag">Óleos</span>
+          <span class="prow__go" aria-hidden="true">↗</span>
+        </a></li>
+      </ul>
+      <div class="lines__foot">
+        <p data-i18n="lines.text">Do salão à sua casa: tratamentos de alta performance pensados para cada momento do seu cabelo.</p>
+        <a class="btn btn--dark" href="https://www.letmebe.com.br/collections/linhas" target="_blank" rel="noopener"><span data-i18n="lines.all">Ver todas as linhas</span><i class="arrow" aria-hidden="true">↗</i></a>
+      </div>
+    </div>
+    <div class="plist__float" aria-hidden="true"><img alt=""></div>
+  </section>
+
+  <!-- 6 · ESSÊNCIA (estilo The Act: rótulo à esquerda, frase à direita) -->
+  <section class="essence solid" id="essencia" aria-labelledby="ess-title">
+    <div class="wrap essence__grid">
+      <div>
+        <h2 id="ess-title" class="statement statement--big reveal-words" data-i18n="ess.title">Na <em>Let Me Be</em>, beleza é liberdade.<br>Liberdade para cuidar de si, se expressar e ser quem você quiser.</h2>
+        <div class="essence__cols">
+          <p data-i18n="ess.p1">Fundada em 2015 em Marília, no interior de São Paulo, a Let Me Be nasceu com o propósito de transformar o cuidado em beleza, unindo inovação, tecnologia e alta performance.</p>
+          <p data-i18n="ess.p2">Hoje temos uma linha completa, do consumidor final ao profissional de salão, filial em Portugal e presença na Europa, na Ásia e nas Américas.</p>
+        </div>
+      </div>
+    </div>
+    <div class="wrap essence__media">
+      <figure class="frame frame--tall"><img src="assets/img/produto-modelo.webp" alt="" data-i18n-alt="ess.alt" loading="lazy"></figure>
+      <div class="ess-side">
+        <blockquote class="ess-quote" data-i18n="ess.quote">Seja quem você quiser ser. A gente cuida do <em>seu cabelo.</em></blockquote>
+        <div class="ess-route">
+          <p class="ess-route__title" data-i18n="ess.rt">De Marília <em>para o mundo.</em></p>
+          <ol>
+            <li><span class="ess-route__k" data-i18n="ess.r1k">2015</span><b data-i18n="ess.r1">Marília, São Paulo</b><small data-i18n="ess.r1s">Onde tudo começou</small></li>
+            <li><span class="ess-route__k" data-i18n="ess.r2k">Filial</span><b data-i18n="ess.r2">Portugal</b><small data-i18n="ess.r2s">Nossa base na Europa</small></li>
+            <li><span class="ess-route__k" data-i18n="ess.r3k">Presença</span><b data-i18n="ess.r3">Europa, Ásia e Américas</b><small data-i18n="ess.r3s">Let Me Be pelo mundo</small></li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · PROFISSIONAL: frasco solto sobre o gradiente institucional -->
+  <section class="pro" id="profissional" aria-labelledby="pro-title">
+    <div class="pro__marquee" aria-hidden="true"><p><span>Passo</span></p><p><span><em>Único</em></span></p></div>
+    <div class="pro__flash" aria-hidden="true"></div>
+    <h2 id="pro-title" class="pro__title" aria-label="Passo Único"><span>Passo</span><span><em>Único</em><sup>®</sup></span></h2>
+    <canvas class="pro__canvas" aria-label="Frasco Passo Único em 3D" role="img"></canvas>
+    <div class="pro__content">
+      <div class="pro__copy">
+        <p class="pro__lead" data-i18n="pro.text">Alisamento com proteína em um único passo. Hidratação avançada, controle do frizz e brilho espelhado, sem pré-lavagem. Feito para o salão, para todos os tipos de cabelo.</p>
+        <a class="btn btn--light" href="https://www.letmebe.com.br/collections/escova-progressiva-protein-smoothing-passo-unico" target="_blank" rel="noopener"><span data-i18n="pro.cta">Ver Passo Único</span><i class="arrow" aria-hidden="true">↗</i></a>
+      </div>
+      <dl class="pro__specs">
+        <div><dt data-i18n="pro.s1">Volume</dt><dd>1000 ml</dd></div>
+        <div><dt data-i18n="pro.s2">Indicação</dt><dd>All hair types</dd></div>
+        <div><dt data-i18n="pro.s3">Pré-lavagem</dt><dd data-i18n="pro.s3d">Não requer</dd></div>
+        <div><dt data-i18n="pro.s4">Uso</dt><dd data-i18n="pro.s4d">Profissional</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <!-- 8 · DIVERSIDADE (trilho lateral) -->
+  <section class="rail solid" aria-labelledby="rail-title">
+    <div class="rail__pin">
+      <h2 id="rail-title" class="display display--md split rail__title" data-i18n="rail.title">Todo cabelo é <em>bonito</em> do seu jeito.</h2>
+      <p class="rail__ghost" aria-hidden="true"><span>Cachos · Ondas · Lisos · Loiros · Ruivos · Crespos · Naturais ·</span></p>
+      <div class="rail__track">
+        <figure class="card"><div class="card__img"><img src="assets/img/cachos.webp" alt="" loading="lazy"></div><figcaption data-i18n="rail.1">Cachos</figcaption></figure>
+        <figure class="card"><div class="card__img"><img src="assets/img/ondas.webp" alt="" loading="lazy"></div><figcaption data-i18n="rail.2">Ondas</figcaption></figure>
+        <figure class="card"><div class="card__img"><img src="assets/img/liso.webp" alt="" loading="lazy"></div><figcaption data-i18n="rail.3">Lisos</figcaption></figure>
+        <figure class="card"><div class="card__img"><img src="assets/img/loiro.webp" alt="" loading="lazy"></div><figcaption data-i18n="rail.4">Loiros</figcaption></figure>
+        <figure class="card"><div class="card__img"><img src="assets/img/ruivo-volume.webp" alt="" loading="lazy"></div><figcaption data-i18n="rail.5">Ruivos</figcaption></figure>
+        <figure class="card"><div class="card__img"><img src="assets/img/cacheado.webp" alt="" loading="lazy"></div><figcaption data-i18n="rail.6">Crespos</figcaption></figure>
+        <figure class="card"><div class="card__img"><img src="assets/img/morena.webp" alt="" loading="lazy"></div><figcaption data-i18n="rail.7">Naturais</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- 9 · WORDMARK (estilo Lumi) -->
+  <section class="wordmark solid" aria-label="Let Me Be">
+    <div class="wordmark__frame">
+      <img src="assets/img/deitada.webp" alt="" loading="lazy">
+      <p class="wordmark__big" aria-hidden="true"><span data-i18n="wm.b1">Liberdade</span><span><em data-i18n="wm.b2">para ser.</em></span></p>
+      <p class="wordmark__line" data-i18n="wm.line">Liberdade para ser.<br>Confiança para brilhar.</p>
+      <svg class="wordmark__logo" viewBox="0 0 1923 416" aria-hidden="true">{{LOGO_H}}</svg>
+    </div>
+  </section>
+
+  <!-- 9b · DÚVIDAS -->
+  <section class="faq solid" aria-labelledby="faq-title">
+    <div class="wrap faq__grid">
+      <div class="faq__head">
+        <h2 id="faq-title" class="display display--md split" data-i18n="faq.title">Dúvidas<br>frequentes.</h2>
+        <p class="lead" data-i18n="faq.lead">Ficou com alguma dúvida? Nosso atendimento está aqui para ajudar.</p>
+        <div class="faq__contact">
+          <a class="btn btn--dark" href="https://wa.me/5514996063242" target="_blank" rel="noopener"><span>WhatsApp</span><i class="arrow" aria-hidden="true">↗</i></a>
+          <a class="faq__mail" href="mailto:sac@letmebe.com.br">sac@letmebe.com.br</a>
+        </div>
+      </div>
+      <div class="faq__list">
+        <details><summary data-i18n="faq.q1">Onde compro os produtos Let Me Be?</summary><div class="faq__a"><p data-i18n="faq.a1">Na loja oficial, em letmebe.com.br, com todas as linhas, kits e lançamentos.</p></div></details>
+        <details><summary data-i18n="faq.q2">Tem frete grátis?</summary><div class="faq__a"><p data-i18n="faq.a2">Sim. A loja oficial oferece frete grátis em compras acima de R$ 199,90.</p></div></details>
+        <details><summary data-i18n="faq.q3">Quais são as formas de pagamento?</summary><div class="faq__a"><p data-i18n="faq.a3">Cartão de crédito com parcelamento em até 10x sem juros, além das demais opções disponíveis no checkout da loja.</p></div></details>
+        <details><summary data-i18n="faq.q4">Como funciona o cashback?</summary><div class="faq__a"><p data-i18n="faq.a4">Todas as compras na loja oficial geram cashback para usar nas próximas compras.</p></div></details>
+        <details><summary data-i18n="faq.q5">Sou profissional. Posso revender?</summary><div class="faq__a"><p data-i18n="faq.a5">Sim. Conheça o programa de distribuidores em letmebecosmetic.com.</p></div></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- 10 · FECHAMENTO (card verde) -->
+  <section class="close solid" id="contato" aria-labelledby="close-title">
+    <div class="close__card">
+      <div class="close__top">
+        <svg class="close__logo" viewBox="0 0 747 845" aria-hidden="true">{{LOGO_V}}</svg>
+        <div class="close__cta">
+          <h2 id="close-title" class="display display--md split" data-i18n="close.title">Seu ritual<br><em>começa aqui.</em></h2>
+          <div class="close__btns">
+            <a class="btn btn--ghost" href="https://letmebecosmetic.com/" target="_blank" rel="noopener"><span data-i18n="close.dist">Seja um distribuidor</span><i class="arrow" aria-hidden="true">↗</i></a>
+          </div>
+        </div>
+      </div>
+      <div class="close__grid">
+        <div><h3 data-i18n="close.care">Atendimento</h3>
+          <a href="mailto:sac@letmebe.com.br">sac@letmebe.com.br</a>
+          <a href="tel:+551434511080">(14) 3451-1080</a>
+          <a href="https://wa.me/5514996063242" target="_blank" rel="noopener">WhatsApp (14) 99606-3242</a>
+          <span data-i18n="close.hours">Seg. a sex., 8h30 às 17h30</span></div>
+        <div><h3 data-i18n="close.follow">Redes</h3>
+          <a href="https://www.instagram.com/letmebeoficial/" target="_blank" rel="noopener">Instagram</a>
+          <a href="https://www.tiktok.com/@letmebeoficial" target="_blank" rel="noopener">TikTok</a>
+          <a href="https://www.youtube.com/channel/UC25IKiBOUY1UVA5Y3jG9OOQ" target="_blank" rel="noopener">YouTube</a>
+          <a href="https://www.facebook.com/letmebebrasil" target="_blank" rel="noopener">Facebook</a>
+          <a href="https://www.linkedin.com/company/let-me-be-oficial/" target="_blank" rel="noopener">LinkedIn</a></div>
+        <div><h3 data-i18n="close.where">Onde estamos</h3>
+          <span data-i18n="close.city">Marília, São Paulo, Brasil</span><span>Portugal</span></div>
+      </div>
+      <div class="close__legal"><span>© 2026 Let Me Be</span><a class="close__credit" href="https://fyw.com.br/" target="_blank" rel="noopener"><span data-i18n="close.credit">Website desenvolvido pela</span> <b>Fyw</b></a><span data-i18n="close.made">Indústria brasileira</span></div>
+      <svg class="close__wordmark" viewBox="0 0 1923 416" aria-hidden="true">{{LOGO_H}}</svg>
+    </div>
+  </section>
+</main>
+
+<button class="to-top" type="button" aria-label="Voltar ao topo" data-i18n-aria="top">
+  <svg viewBox="0 0 48 48" aria-hidden="true"><circle class="to-top__track" cx="24" cy="24" r="21"/><circle class="to-top__ring" cx="24" cy="24" r="21"/><path d="M24 31V17m-6 6 6-6 6 6"/></svg>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+} }
+</script>
+<script src="js/i18n.js"></script>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
