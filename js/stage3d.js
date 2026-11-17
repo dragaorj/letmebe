@@ -379,7 +379,9 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
     // abacates: saem da boca do pote → anel inclinado que gira → coroa frontal (ingredientes)
     const b = state.burst, g = ease(state.gather), sc = state.scale * (mobile ? 0.95 : 1);
     const mouth = new THREE.Vector3(ox, state.y + 1.32 * sc, 0);
-    const R = (mobile ? 1.65 : 2.35) * state.orbit, Rg = mobile ? 1.62 : 2.7, RY = mobile ? 1.12 : 0.82;   // celular: coroa mais alta, abacates mais longe do pote
+    const R = (mobile ? 1.65 : 2.35) * state.orbit, Rg = mobile ? 1.62 : 2.7, RY = mobile ? 1.12 : 0.82;
+    // celular: na metade de baixo o caminho dos abacates é mais achatado (passam perto do pote, acima do texto do ingrediente)
+    const ryOf = (a) => Math.sin(a) * Rg * RY;   // celular: coroa mais alta, abacates mais longe do pote
     const P0 = new THREE.Vector3(), P1 = new THREE.Vector3(), P2 = new THREE.Vector3(), qT = new THREE.Quaternion(), qF = new THREE.Quaternion();
     // os abacates respondem à rolagem: rolar rápido = giram rápido; parado = giro lento
     const sy = window.scrollY, dy = sy - lastSY; lastSY = sy;
@@ -406,7 +408,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
       // alvo no anel (frente mais baixa, fundo mais alto) e na coroa frontal
       const ring = ringAt(a);
       const ca = p.ring - (orbitPhase - crownRef) * 0.6;   // a coroa também gira com a rolagem
-      const crown = new THREE.Vector3(ox + Math.cos(ca) * Rg * 1.1, 0.95 + (mobile ? state.y - 0.25 : 0) + Math.sin(ca) * Rg * RY, -0.7);
+      const crown = new THREE.Vector3(ox + Math.cos(ca) * Rg * 1.1, 0.95 + (mobile ? state.y - 0.25 : 0) + ryOf(ca), -0.7);
       // corrente no sentido horário: todos entram pelo topo do círculo, um de cada vez, e andam juntos
       // (mesma velocidade, mesmo espaçamento) até o seu lugar; o primeiro "puxa" o próximo
       const TAU2 = Math.PI * 2, cy = 0.95 + (mobile ? state.y - 0.25 : 0);
@@ -419,12 +421,12 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
       const approach = ease(clamp01((PG - (join - APP)) / APP));   // sai da órbita e vai até a entrada
       let gi;
       if (PG < join) {
-        P2.set(ox + Math.cos(entry) * Rg * 1.1, cy + Math.sin(entry) * Rg * RY, crown.z);
+        P2.set(ox + Math.cos(entry) * Rg * 1.1, cy + ryOf(entry), crown.z);
         P2.lerpVectors(ring, P2, approach); P2.z += Math.sin(Math.PI * approach) * 0.5;
         gi = approach;
       } else {
         const th = entry - Math.min(dArc, (PG - join) * V);
-        P2.set(ox + Math.cos(th) * Rg * 1.1, cy + Math.sin(th) * Rg * RY, crown.z);
+        P2.set(ox + Math.cos(th) * Rg * 1.1, cy + ryOf(th), crown.z);
         gi = 1;
       }
       const sw = 0;
@@ -436,7 +438,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
         const sArc = state.sink * (TAU2 + 0.8);
         if (sArc < dTop) {
           const t2 = thc - sArc;
-          P2.set(ox + Math.cos(t2) * Rg * 1.1, cy + Math.sin(t2) * Rg * RY, crown.z);
+          P2.set(ox + Math.cos(t2) * Rg * 1.1, cy + ryOf(t2), crown.z);
         } else {
           sinkK = clamp01((sArc - dTop) / 0.8);
           const e2 = sinkK * sinkK;

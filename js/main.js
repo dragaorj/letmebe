@@ -256,7 +256,7 @@ function buildScroll() {
   // 1 · Hero: desenrosca a tampa, creme cresce, abacates explodem (pico)
   const PORTRAIT_FACE_Y = 0.62, LAND_FACE_Y = 0.05;   // computador: o pote encosta de leve nas letras do título   // telas em pé (monitor vertical): o creme sobe para perto do título
   const MOB = innerWidth <= 760, HERO_Y = MOB ? (innerHeight < 720 ? 0.3 : 0.22) : -0.3, SH = 2.6;   // SH: duração extra do manifesto
-  const ING_Y = innerWidth <= 760 ? 0.05 : 0.25;   // altura do pote nos ingredientes
+  const ING_Y = innerWidth <= 760 ? 0.42 : 0.25;   // altura do pote nos ingredientes
   const FACE_Y = MOB ? (innerHeight < 720 ? -0.15 : 0.07) : (innerWidth / innerHeight < 0.85 ? PORTRAIT_FACE_Y : LAND_FACE_Y);   // altura do pote na cena da textura
   // pote fechado no fim da textura: centralizado no eixo da câmera (que mira a altura 1.3), um pouco acima do centro.
   // O cálculo vale para qualquer tamanho de tela; em telas baixas o pote fica menor para caber o botão embaixo.
@@ -386,7 +386,7 @@ function buildScroll() {
     if (innerWidth <= 900) {
       // celular: o círculo vai do alto da tela (logo abaixo do menu) até perto do rodapé da tela, cortado nas laterais
       const H = stage.screenH ? stage.screenH() : innerHeight;
-      const D = Math.max(innerWidth * 1.1, 2 * Math.min(j.y - 165, H - j.y - 44));   // o ingrediente do topo passa abaixo do menu
+      const D = innerWidth <= 760 ? innerWidth * 0.94 : Math.max(innerWidth * 1.1, 2 * Math.min(j.y - 165, H - j.y - 44));   // celular: o círculo cabe inteiro na tela
       orbitEl.style.width = D.toFixed(0) + 'px';
       // título menor, logo acima do pote
       ingTitle.style.setProperty('top', Math.max(84, j.y - innerWidth * 0.29 - ingTitle.offsetHeight).toFixed(0) + 'px', 'important');
@@ -429,6 +429,47 @@ function buildScroll() {
       it.style.opacity = Math.max(0, Math.min(1, (ib.top - hb - 6) / 50)).toFixed(3);   // perto do menu, o ingrediente some suave
     });
   });
+  // celular: um ingrediente por vez, em destaque abaixo do pote. O círculo segue girando; o ingrediente que passa
+  // embaixo vira o destaque. Bolinhas e arrastar para o lado trocam de ingrediente.
+  { const feat = $('.ing-feat'), fb = feat.querySelector('.ing-feat__body'), fn = feat.querySelector('.ing-feat__n'), ft = feat.querySelector('.ing-feat__t'),
+      fs = feat.querySelector('.ing-feat__s'), fm = feat.querySelector('.ing-feat__m'), dots = [...feat.querySelectorAll('.ing-feat__dots button')];
+    const BASES = [-135, -45, 135, 45];
+    let cur = -1, busy = null;
+    const fill = (k) => {
+      const c = orbitChips[k]; fn.textContent = '0' + (k + 1) + ' / 04';
+      ft.textContent = c.querySelector('b').textContent; fs.textContent = c.querySelector('span').textContent; fm.textContent = c.querySelector('.chip__more').textContent;
+      dots.forEach((d, i) => { d.classList.toggle('is-on', i === k); d.setAttribute('aria-selected', String(i === k)); d.setAttribute('aria-label', orbitChips[i].querySelector('b').textContent); });
+    };
+    const show = (k) => {
+      if (k === cur) return; const first = cur < 0; cur = k;
+      if (first) { fill(k); return; }
+      gsap.to(fb, { autoAlpha: 0, y: -8, duration: 0.25, ease: 'power2.in', overwrite: true, onComplete: () => { fill(k); gsap.fromTo(fb, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0, duration: 0.55, ease: 'expo.out' }); } });
+    };
+    // gira o círculo até o ingrediente k ficar embaixo, no meio (sempre para a frente, sem voltar)
+    const goTo = (k) => {
+      let tgt = 90 - BASES[k]; while (tgt <= orbitRot + 0.5) tgt += 360; if (tgt - orbitRot > 360) tgt -= 360;
+      const o = { r: orbitRot }; busy && busy.kill(); orbitHold = true;
+      busy = gsap.to(o, { r: tgt, duration: 0.9, ease: 'power3.inOut', onUpdate: () => { orbitRot = o.r % 360; }, onComplete: () => { orbitHold = false; busy = null; } });
+      show(k);
+    };
+    dots.forEach((d, i) => d.addEventListener('click', () => goTo(i)));
+    let tx = 0, ty = 0, tOn = false;
+    addEventListener('touchstart', (e) => { if (innerWidth > 760 || +feat.style.opacity < 0.5) return; tOn = true; tx = e.touches[0].clientX; ty = e.touches[0].clientY; }, { passive: true });
+    addEventListener('touchend', (e) => {
+      if (!tOn) return; tOn = false; const t = e.changedTouches[0], dx = t.clientX - tx, dy = t.clientY - ty;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.4 && cur >= 0) goTo((cur + (dx < 0 ? 1 : 3)) % 4);
+    }, { passive: true });
+    gsap.ticker.add(() => {
+      const mob = innerWidth <= 760;
+      const g = mob ? Math.max(0, Math.min(1, S.gather * 1.5)) * (1 - Math.max(0, Math.min(1, S.sink * 2.2))) : 0;
+      feat.style.opacity = g.toFixed(3); feat.style.visibility = g < 0.002 ? 'hidden' : 'visible'; feat.style.pointerEvents = g > 0.5 ? 'auto' : 'none';
+      if (!mob || g < 0.002) return;
+      // destaque = ingrediente mais perto de embaixo (90°)
+      let best = 0, bd = 1e9;
+      BASES.forEach((b, k) => { const a = ((b + orbitRot) % 360 + 360) % 360, d = Math.abs(a - 90); if (d < bd) { bd = d; best = k; } });
+      if (!busy) show(best);
+    });
+  }
   // janela do ingrediente: independente do "+", flutua do lado de dentro do círculo (em direção ao pote)
   // e sempre dentro da tela, abaixo do menu
   { const pop = $('.ing-pop'), pt = pop.querySelector('.ing-pop__t'), ps = pop.querySelector('.ing-pop__s'), pm = pop.querySelector('.ing-pop__m');
@@ -506,7 +547,12 @@ function buildScroll() {
   // essência: imagens com parallax interno e entrada por recorte
   $$('.frame img').forEach((img) => gsap.fromTo(img, { yPercent: -10 }, { yPercent: 0, ease: 'none', scrollTrigger: { trigger: img.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } }));
   gsap.from('.essence__media .frame', { clipPath: 'inset(30% 0% 0% 0% round 28px)', y: 60, stagger: 0.12, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: '.essence__media', start: 'top 85%' } });
-  gsap.from('.essence__cols p', { y: 30, autoAlpha: 0, stagger: 0.1, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: '.essence__cols', start: 'top 85%' } });
+  // história: o ano aparece contando (2000 → 2015) e os parágrafos sobem em seguida
+  { const yb = $('.ess-year b');
+    gsap.timeline({ scrollTrigger: { trigger: '.essence__story', start: 'top 85%' } })
+      .from('.ess-year > *', { y: 24, autoAlpha: 0, stagger: 0.08, duration: 1, ease: 'expo.out' })
+      .fromTo({ v: 2000 }, { v: 2000 }, { v: 2015, duration: 1.4, ease: 'power3.out', onUpdate() { yb.textContent = Math.round(this.targets()[0].v); } }, 0.1)
+      .from('.essence__cols p', { y: 30, autoAlpha: 0, stagger: 0.12, duration: 1.1, ease: 'expo.out' }, 0.25); }
 
   // o pote 3D (fixo no fundo) some quando a seção seguinte já cobre a tela inteira; volta ao subir.
   // Evita que ele apareça por trás de áreas transparentes mais abaixo (ex.: transição do Passo Único para os cabelos)

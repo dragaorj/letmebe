@@ -1620,3 +1620,45 @@ html:has(.header.is-compact) .mnav__a11y{display:block}
   @keyframes plusGlow{0%{box-shadow:0 0 0 0 rgba(191,167,119,.55)}70%{box-shadow:0 0 0 10px rgba(191,167,119,0)}100%{box-shadow:0 0 0 0 rgba(191,167,119,0)}}
 }
 @media (max-width:760px){html[lang="en"] .texture__title{font-size:clamp(36px,11.2vw,80px)!important}}   /* inglês: "Touch and feel the" cabe numa linha */
+
+/* celular: a seção dos cabelos cobre a tela inteira mesmo com a barra do navegador recolhida (sem faixa cinza) e a foto fica maior */
+@media (max-width:760px){
+  .rail__pin{height:100vh!important;height:100lvh!important;padding:13svh 0 calc(7svh + (100lvh - 100svh))!important}
+  .card{flex:0 0 76vw!important}
+}
+
+/* ===== celular: ingredientes um por vez, em destaque abaixo do pote ===== */
+.ing-feat{display:none}
+@media (max-width:760px){
+  .orbit .orbit__item{visibility:hidden!important}   /* os nomes em volta saem; o círculo e os abacates seguem girando */
+  .ing-feat{display:grid;justify-items:center;gap:14px;position:fixed;left:16px;right:16px;bottom:max(22px,3.5svh);z-index:4;text-align:center;opacity:0;visibility:hidden}
+  .ing-feat__body{display:grid;justify-items:center;gap:6px;max-width:330px}
+  .ing-feat__n{font-family:var(--f-label);font-style:italic;font-size:11px;letter-spacing:.22em;color:var(--ouro-ink)}
+  .ing-feat__t{font-family:var(--f-display);font-weight:400;font-size:clamp(28px,8.4vw,36px);line-height:1.05;color:var(--ink)}
+  .ing-feat__s{font-family:var(--f-label);font-style:italic;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--verde)}
+  .ing-feat__m{margin:4px 0 0;font-size:14px;line-height:1.55;color:var(--ink-soft)}
+  .ing-feat__dots{display:flex;gap:10px}
+  .ing-feat__dots button{position:relative;width:8px;height:8px;padding:0;border:0;border-radius:99px;background:rgba(64,64,64,.2);cursor:pointer;transition:width .5s var(--ease),background-color .5s}
+  .ing-feat__dots button.is-on{width:26px;background:var(--ouro)}
+  .ing-feat__dots button::before{content:"";position:absolute;margin:-14px;width:36px;height:36px}
+}
+
+/* ===== Essência: bloco da história (ano em destaque + texto maior) ===== */
+.essence__story{display:grid;grid-template-columns:minmax(200px,.8fr) 2fr;gap:clamp(32px,5vw,90px);align-items:start;margin-top:clamp(40px,7vh,80px);padding-top:clamp(28px,4vh,44px);border-top:1px solid rgba(191,167,119,.45)}
+.ess-year{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px;row-gap:4px}
+.ess-year svg{width:12px;height:12px;fill:var(--ouro)}
+.ess-year span{font-family:var(--f-label);font-style:italic;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ouro-ink)}
+.ess-year b{grid-column:1/-1;font-family:var(--f-display);font-weight:400;font-size:clamp(72px,8vw,140px);line-height:.9;letter-spacing:-.03em;color:var(--verde);font-variant-numeric:lining-nums tabular-nums}
+.ess-year small{grid-column:1/-1;font-family:var(--f-label);font-style:italic;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.essence__story .essence__cols{margin:0!important;gap:clamp(24px,3vw,48px);font-size:clamp(16px,1.15vw,19px);line-height:1.7;color:var(--ink)}
+.essence__story .essence__cols p:first-child::first-line{font-weight:500}
+@media (max-width:760px){
+  .essence__story{grid-template-columns:1fr;gap:26px}
+  .ess-year b{font-size:clamp(72px,24vw,110px)}
+  .essence__story .essence__cols{grid-template-columns:1fr;font-size:16px}
+}
+/* celular: o texto do ingrediente ganha um fundo suave (o abacate passa por trás, desfocado, e o texto continua legível) */
+@media (max-width:760px){
+  .ing-feat{z-index:5}
+  .ing-feat__body{padding:16px 18px 14px;border-radius:24px;background:rgba(248,245,241,.5);-webkit-backdrop-filter:blur(14px) saturate(1.1);backdrop-filter:blur(14px) saturate(1.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.55),0 20px 40px -28px rgba(0,60,50,.35)}
+}

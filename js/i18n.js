@@ -1,6 +1,6 @@
 /* Textos PT / EN — Let Me Be (sem travessões no texto visível) */
 window.LMB_I18N = {
-  pt: { "ing.hint": "Clique para saber mais", "ing.close": "Fechar", "hero.scroll": "Role para continuar", "a11y.title": "Acessibilidade", "a11y.text": "Texto maior", "a11y.contrast": "Alto contraste", "a11y.motion": "Menos movimento", "a11y.links": "Destacar links", "a11y.skip": "Pular para o conteúdo",
+  pt: { "ing.hint": "Clique para saber mais", "ing.dots": "Ingredientes", "ing.close": "Fechar", "hero.scroll": "Role para continuar", "a11y.title": "Acessibilidade", "a11y.text": "Texto maior", "a11y.contrast": "Alto contraste", "a11y.motion": "Menos movimento", "a11y.links": "Destacar links", "a11y.skip": "Pular para o conteúdo",
     "nav.ing": "Ingredientes", "nav.faq": "FAQ", "nav.contact": "Contato",
     "ess.rt": "De Marília <em>para o mundo.</em>",
     "ess.r1k": "2015",
@@ -36,7 +36,7 @@ window.LMB_I18N = {
     "lines.c3tag": "Lançamento", "lines.c4tag": "Óleos",
     "ess.label": "Nossa essência",
     "ess.title": "<span class=\"nw\">Na <em>Let Me Be</em>,</span> beleza é liberdade.<br class=\"d\"> Liberdade para cuidar de si,<br class=\"d\"> se expressar e ser quem você quiser.",
-    "ess.p1": "Fundada em 2015 em Marília, no interior de São Paulo, a Let Me Be nasceu com o propósito de transformar o cuidado em beleza, unindo inovação, tecnologia e alta performance.",
+    "ess.since": "Desde", "ess.p1": "Fundada em 2015 em Marília, no interior de São Paulo, a Let Me Be nasceu com o propósito de transformar o cuidado em beleza, unindo inovação, tecnologia e alta performance.",
     "ess.p2": "Hoje temos uma linha completa, do consumidor final ao profissional de salão, filial em Portugal e presença na Europa, na Ásia e nas Américas.",
     "ess.alt": "Modelo com produtos Let Me Be", "ess.f1": "Fundada em Marília, no interior de São Paulo", "ess.f2": "Filial em Portugal, para atender a Europa", "ess.f3": "Regiões no mundo: Europa, Ásia e Américas",
     "ess.quote": "Seja quem você quiser ser. A gente cuida do <em>seu cabelo.</em>",
@@ -58,7 +58,7 @@ window.LMB_I18N = {
     "faq.q4": "Como funciona o cashback?", "faq.a4": "Todas as compras na loja oficial geram cashback para usar nas próximas compras.",
     "faq.q5": "Sou profissional. Posso revender?", "faq.a5": "Sim. Conheça o programa de distribuidores em letmebecosmetic.com."
   },
-  en: { "ing.hint": "Tap to learn more", "ing.close": "Close", "hero.scroll": "Scroll to continue", "a11y.title": "Accessibility", "a11y.text": "Larger text", "a11y.contrast": "High contrast", "a11y.motion": "Reduce motion", "a11y.links": "Highlight links", "a11y.skip": "Skip to content",
+  en: { "ing.hint": "Tap to learn more", "ing.dots": "Ingredients", "ing.close": "Close", "hero.scroll": "Scroll to continue", "a11y.title": "Accessibility", "a11y.text": "Larger text", "a11y.contrast": "High contrast", "a11y.motion": "Reduce motion", "a11y.links": "Highlight links", "a11y.skip": "Skip to content",
     "nav.ing": "Ingredients", "nav.faq": "FAQ", "nav.contact": "Contact",
     "ess.rt": "From Marília <em>to the world.</em>",
     "ess.r1k": "2015",
@@ -94,7 +94,7 @@ window.LMB_I18N = {
     "lines.c3tag": "New in", "lines.c4tag": "Oils",
     "ess.label": "Our essence",
     "ess.title": "<span class=\"nw\">At <em>Let Me Be</em>,</span> beauty is freedom.<br class=\"d\"> Freedom to care for yourself,<br class=\"d\"> express yourself and be whoever you want.",
-    "ess.p1": "Founded in 2015 in Marília, São Paulo, Let Me Be was born to turn care into beauty, combining innovation, technology and high performance.",
+    "ess.since": "Since", "ess.p1": "Founded in 2015 in Marília, São Paulo, Let Me Be was born to turn care into beauty, combining innovation, technology and high performance.",
     "ess.p2": "Today we offer a complete line, from home care to salon professionals, with a branch in Portugal and presence across Europe, Asia and the Americas.",
     "ess.alt": "Model with Let Me Be products", "ess.f1": "Founded in Marília, São Paulo, Brazil", "ess.f2": "Branch in Portugal, serving all of Europe", "ess.f3": "Regions worldwide: Europe, Asia and the Americas",
     "ess.quote": "Be whoever you want to be. We take care of <em>your hair.</em>",
