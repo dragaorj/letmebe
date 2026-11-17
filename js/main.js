@@ -500,10 +500,18 @@ function buildScroll() {
   // profissional: frasco Passo Único em 3D
   const bottle = createBottle($('.pro__canvas'));
   const B = bottle.state;
+  // celular: o frasco ocupa exatamente o espaço livre entre o menu e o texto (nunca fica por cima do texto)
+  const fitB = () => {
+    if (innerWidth > 760) return { y: -0.12, s: 1.05 };
+    const cv = $('.pro__canvas').getBoundingClientRect(), cp = $('.pro__copy').getBoundingClientRect(), h = cv.height || innerHeight;
+    const H = 2 * Math.tan(14 * Math.PI / 180) * 9.2, w2y = (p) => 0.15 + (0.5 - p / h) * H;   // pixel do canvas -> altura no mundo 3D
+    const yT = w2y(84), yB = w2y(cp.top - cv.top - 28);
+    return { y: (yT + yB) / 2, s: Math.min(1.05, Math.max(0.5, (yT - yB) / 2.62)) };
+  };
   Object.assign(B, { x: 0, y: -1.1, rotY: 0, scale: 1.05, shadow: 0.7 });   // sempre de frente
   // o frasco sobe e gira no arco frontal; o título gigante desliza em sentidos opostos
-  gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.pro', start: 'top bottom', end: 'bottom top', scrub: 1.2, invalidateOnRefresh: true } })
-    .to(B, { y: innerWidth <= 760 ? 0.62 : -0.12, duration: 0.5, ease: 'power2.out' }, 0)
+  gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.pro', start: 'top bottom', end: 'top top', scrub: 1.2, invalidateOnRefresh: true } })   // chega ao lugar final quando a seção encosta no topo
+    .to(B, { y: () => fitB().y, scale: () => fitB().s, duration: 0.5, ease: 'power2.out' }, 0)
     .to({}, { duration: 0.01 }, 0)
     .to({}, { duration: 0.01 }, 0);
   gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.pro', start: 'top bottom', end: 'bottom top', scrub: 1.5 } })

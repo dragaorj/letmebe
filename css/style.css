@@ -1601,3 +1601,4 @@ html:has(.header.is-compact) .mnav__a11y{display:block}
 @media (max-width:760px){.ingredients__title{font-size:clamp(28px,8.8vw,40px)!important;line-height:1.08!important}}
 @media (max-width:760px) and (min-height:721px){.texture__title{top:25.5svh!important}}   /* título + pote centralizados juntos no celular */
 .header:not(.is-compact) .header__nav{height:var(--hbtn);box-sizing:border-box;align-items:center}
+.pro__kick::after{content:none!important;display:none!important}
