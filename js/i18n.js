@@ -1,6 +1,6 @@
 /* Textos PT / EN — Let Me Be (sem travessões no texto visível) */
 window.LMB_I18N = {
-  pt: { "hero.scroll": "Role para continuar", "a11y.title": "Acessibilidade", "a11y.text": "Texto maior", "a11y.contrast": "Alto contraste", "a11y.motion": "Menos movimento", "a11y.links": "Destacar links", "a11y.skip": "Pular para o conteúdo",
+  pt: { "ing.close": "Fechar", "hero.scroll": "Role para continuar", "a11y.title": "Acessibilidade", "a11y.text": "Texto maior", "a11y.contrast": "Alto contraste", "a11y.motion": "Menos movimento", "a11y.links": "Destacar links", "a11y.skip": "Pular para o conteúdo",
     "nav.ing": "Ingredientes", "nav.faq": "FAQ", "nav.contact": "Contato",
     "ess.rt": "De Marília <em>para o mundo.</em>",
     "ess.r1k": "2015",
@@ -58,7 +58,7 @@ window.LMB_I18N = {
     "faq.q4": "Como funciona o cashback?", "faq.a4": "Todas as compras na loja oficial geram cashback para usar nas próximas compras.",
     "faq.q5": "Sou profissional. Posso revender?", "faq.a5": "Sim. Conheça o programa de distribuidores em letmebecosmetic.com."
   },
-  en: { "hero.scroll": "Scroll to continue", "a11y.title": "Accessibility", "a11y.text": "Larger text", "a11y.contrast": "High contrast", "a11y.motion": "Reduce motion", "a11y.links": "Highlight links", "a11y.skip": "Skip to content",
+  en: { "ing.close": "Close", "hero.scroll": "Scroll to continue", "a11y.title": "Accessibility", "a11y.text": "Larger text", "a11y.contrast": "High contrast", "a11y.motion": "Reduce motion", "a11y.links": "Highlight links", "a11y.skip": "Skip to content",
     "nav.ing": "Ingredients", "nav.faq": "FAQ", "nav.contact": "Contact",
     "ess.rt": "From Marília <em>to the world.</em>",
     "ess.r1k": "2015",
@@ -85,7 +85,7 @@ window.LMB_I18N = {
     "ing.3t": "Omega 9", "ing.3p": "Softness and flexibility",
     "ing.4t": "Shine", "ing.4p": "Aligned, luminous strands",
     "ing.1m": "Rich in fatty acids and vitamins, avocado oil coats the fiber, restores lost nourishment and leaves hair soft and silky.", "ing.2m": "A natural antioxidant that helps protect hair from everyday stressors like sun, pollution and blow-dryer heat, preserving its shine.", "ing.3m": "Helps replenish the fiber's lipids, bringing back flexibility and softness and reducing frizz on dry hair.", "ing.4m": "With a nourished fiber and an aligned cuticle, hair reflects more light: natural shine, movement and a healthy look.", "top": "Back to top",
-    "tex.big": "Touch and feel<br><em><span>the texture</span> <span>of the cream.</span></em>", "tex.hint": "Click and drag on the cream.", "tex.ring": "Click and drag on the cream", "tex.ringTouch": "Hold and drag your finger",
+    "tex.big": "Touch and feel the<br><em><span>texture</span> <span>of the cream.</span></em>", "tex.hint": "Click and drag on the cream.", "tex.ring": "Click and drag on the cream", "tex.ringTouch": "Hold and drag your finger",
     "lines.title": "For every strand, <em>a formula.</em>", "lines.label": "Our lines",
     "lines.text": "From salon to home: high-performance treatments made for every moment of your hair.",
     "lines.all": "See all lines", "lines.go": "Discover",

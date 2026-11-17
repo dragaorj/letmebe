@@ -432,8 +432,12 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
       v3.set(0, 0, 0).addScaledVector(P0, u * u).addScaledVector(P1, 2 * u * e).addScaledVector(P2, e * e);
       // hover: cresce, avança e mostra a polpa
       // mola amortecida: bate, balança e volta devagar para a órbita
-      p.vel.addScaledVector(p.off, -7 * dt).multiplyScalar(Math.exp(-2.1 * dt)); p.off.addScaledVector(p.vel, dt);
-      p.rvel.addScaledVector(p.rot, -5 * dt).multiplyScalar(Math.exp(-1.6 * dt)); p.rot.addScaledVector(p.rvel, dt);
+      // mola mais firme e com limite: por mais forte que o mouse bata, o abacate sempre volta para a órbita
+      p.vel.addScaledVector(p.off, -11 * dt).multiplyScalar(Math.exp(-3.2 * dt)); p.off.addScaledVector(p.vel, dt);
+      p.rvel.addScaledVector(p.rot, -8 * dt).multiplyScalar(Math.exp(-2.6 * dt)); p.rot.addScaledVector(p.rvel, dt);
+      if (p.off.length() > 1.1) { p.off.setLength(1.1); p.vel.multiplyScalar(0.5); }
+      p.rot.clampScalar(-1.4, 1.4);
+      if (p.off.lengthSq() < 1e-6 && p.vel.lengthSq() < 1e-6) { p.off.set(0, 0, 0); p.vel.set(0, 0, 0); }
       v3.add(p.off);
       if (!p.sm) p.sm = v3.clone(); else p.sm.lerp(v3, raw < 1 ? 1 : 0.32);
       p.obj.position.copy(p.sm);
@@ -474,7 +478,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
   return {
     state, creamScreen, jarScreen,
     pause() { running = false; },
-    resume() { if (!running) { running = true; clock.getDelta(); quality.reset(); requestAnimationFrame(frame); } },
+    resume() { pieces.forEach((p) => { p.off.set(0, 0, 0); p.vel.set(0, 0, 0); p.rot.set(0, 0, 0); p.rvel.set(0, 0, 0); }); if (!running) { running = true; clock.getDelta(); quality.reset(); requestAnimationFrame(frame); } },
     resetSpin() { idleRot = 0; userRot = 0; spinV = 0; },
     get mobile() { return mobile; },
     get kneading() { return kneading; },

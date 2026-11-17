@@ -289,7 +289,7 @@ function buildScroll() {
   };
   texTitle.style.opacity = 0;
   const clamp = (v) => Math.max(0, Math.min(1, v));
-  let hintA = 1, lastKneadT = -1e9;
+  let hintA = 1, lastKneadT = -1e9, texTop = null;
   gsap.ticker.add(() => {
     // visibilidade amarrada ao 3D: nada aparece fora de hora
     const k = clamp((S.face - 0.82) / 0.18);
@@ -311,6 +311,16 @@ function buildScroll() {
     const w = c.rx * 1.8;   // texto rente à borda interna do creme
     ringEl.style.left = c.x + 'px'; ringEl.style.top = c.y + 'px'; ringEl.style.width = w + 'px';
     ringEl.style.transform = `translate(-50%,-50%) scaleY(${Math.min(1, c.ry / c.rx).toFixed(3)})`;
+    // computador: o título se posiciona pela borda do pote, que só encosta na base das letras (nenhuma palavra fica coberta)
+    if (innerWidth > 760 && S.face > 0.85) {
+      const fs = parseFloat(getComputedStyle(texTitle).fontSize) || 100, th = texTitle.offsetHeight;
+      const rimTop = c.y - c.ry * 1.18;                      // topo da borda do pote na tela
+      const sr = texTitle.parentElement.getBoundingClientRect();
+      const minTop = (header.getBoundingClientRect().bottom || 80) + 12;
+      const want = Math.max(minTop, rimTop + fs * 0.16 - th) - sr.top;
+      texTop = texTop === null ? want : texTop + (want - texTop) * 0.2;
+      texTitle.style.setProperty('top', texTop.toFixed(1) + 'px', 'important');
+    }
   });
   // anéis e ingredientes centralizados exatamente no pote
   const orbitEl = $('.orbit');
@@ -354,6 +364,42 @@ function buildScroll() {
     if (!orbitHold && !isOpen && !reduce) orbitRot = (orbitRot + dt * (innerWidth <= 900 ? 0.011 : 0.006)) % 360;   // no celular gira um pouco mais rápido: um ingrediente passa por baixo a cada ~8 s
     orbitList.style.setProperty('--rot', orbitRot.toFixed(2) + 'deg');
   });
+  // janela do ingrediente: independente do "+", flutua do lado de dentro do círculo (em direção ao pote)
+  // e sempre dentro da tela, abaixo do menu
+  { const pop = $('.ing-pop'), pt = pop.querySelector('.ing-pop__t'), ps = pop.querySelector('.ing-pop__s'), pm = pop.querySelector('.ing-pop__m');
+    let shown = null;
+    const closeOpen = () => {
+      const o = orbitList.querySelector('.chip[aria-expanded="true"]'); if (!o) return;
+      const k = [...orbitChips].indexOf(o);
+      o.setAttribute('aria-expanded', 'false'); document.querySelector('.ingredients').classList.remove('has-open');
+      window.__orbitManual = false; window.__orbitAutoReset && window.__orbitAutoReset(k);
+    };
+    pop.querySelector('.ing-pop__x').addEventListener('click', closeOpen);
+    gsap.ticker.add(() => {
+      const o = S.gather > 0.5 && S.sink < 0.2 ? orbitList.querySelector('.chip[aria-expanded="true"]') : null;
+      if (o !== shown) {
+        shown = o;
+        if (o) {
+          pt.textContent = o.querySelector('b').textContent; ps.textContent = o.querySelector('span').textContent;
+          pm.textContent = o.querySelector('.chip__more').textContent;
+        }
+        pop.classList.toggle('is-open', !!o); pop.setAttribute('aria-hidden', String(!o));
+      }
+      if (!o) return;
+      const plus = o.querySelector('.chip__plus').getBoundingClientRect(), j0 = stage.jarScreen();
+      const px = plus.left + plus.width / 2, py = plus.top + plus.height / 2;
+      let dx = j0.x - px, dy = j0.y - py; const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
+      const w = pop.offsetWidth, hh = pop.offsetHeight, gap = 26;
+      // centro da janela: a partir do "+", na direção do pote, afastado o suficiente para não cobrir o "+"
+      const reach = Math.abs(dx) * w / 2 + Math.abs(dy) * hh / 2 + gap;
+      let cx = px + dx * reach, cy = py + dy * reach;
+      const top = (header.getBoundingClientRect().bottom || 80) + 14, m = 16;
+      cx = Math.min(innerWidth - m - w / 2, Math.max(m + w / 2, cx));
+      cy = Math.min(innerHeight - m - hh / 2, Math.max(top + hh / 2, cy));
+      pop.style.transform = `translate(${(cx - w / 2).toFixed(1)}px, ${(cy - hh / 2).toFixed(1)}px)`;
+    });
+    window.__ingPopClose = closeOpen;
+  }
   // celular: ao abrir um ingrediente, o círculo gira até ele ficar embaixo, no centro (o cartão não fica cortado na lateral)
   window.__orbitFocus = (k) => {
     const base = [-135, -45, 135, 45][k]; if (base === undefined) return;
@@ -511,7 +557,9 @@ function buildScroll() {
     const a = d.querySelector('.faq__a'), sm = d.querySelector('summary');
     sm.addEventListener('click', (e) => {
       e.preventDefault();
-      if (d.open) { gsap.to(a, { height: 0, duration: 0.5, ease: 'power3.inOut', onComplete: () => { d.open = false; gsap.set(a, { clearProps: 'height' }); } }); return; }
+      if (d.open) {   // fechar: o bloco volta à cor normal e o "+" gira de volta na hora; só a resposta recolhe
+        d.classList.add('is-closing');
+        gsap.to(a, { height: 0, duration: 0.35, ease: 'power2.inOut', onComplete: () => { d.open = false; d.classList.remove('is-closing'); gsap.set(a, { clearProps: 'height' }); } }); return; }
       $$('.faq details[open]').forEach((o) => o !== d && o.querySelector('summary').click());
       d.open = true; gsap.fromTo(a, { height: 0 }, { height: 'auto', duration: 0.7, ease: 'expo.out' });
       gsap.fromTo(a.querySelector('p'), { y: 16, autoAlpha: 0 }, { y: 0, autoAlpha: 0.85, duration: 0.6, delay: 0.1, ease: 'expo.out' });
@@ -634,7 +682,7 @@ $$('.chip').forEach((c) => c.addEventListener('click', () => {
 { const btn = $('.a11y-btn'), panel = $('.a11y-panel');
   const show = (o) => { btn.setAttribute('aria-expanded', String(o)); panel.classList.toggle('is-open', o); };
   btn.addEventListener('click', (e) => { e.stopPropagation(); show(btn.getAttribute('aria-expanded') !== 'true'); });
-  document.addEventListener('pointerdown', (e) => { if (!e.target.closest('.a11y')) show(false); });
+  document.addEventListener('pointerdown', (e) => { if (!(e.target.closest && e.target.closest('.a11y'))) show(false); });
   addEventListener('keydown', (e) => { if (e.key === 'Escape') show(false); });
   addEventListener('scroll', () => { if (header.classList.contains('is-compact')) show(false); }, { passive: true });
 }
@@ -655,7 +703,7 @@ $$('.chip').forEach((c) => c.addEventListener('click', () => {
 // cartão de ingrediente aberto: tocar ou clicar fora fecha (e o resto volta ao normal)
 document.addEventListener('pointerdown', (e) => {
   const open = document.querySelector('.orbit .chip[aria-expanded="true"]');
-  if (!open || e.target.closest('.orbit .chip')) return;
+  if (!open || (e.target.closest && e.target.closest('.orbit .chip, .ing-pop'))) return;
   const k = [...document.querySelectorAll('.orbit .chip')].indexOf(open);
   open.setAttribute('aria-expanded', 'false');
   document.querySelector('.ingredients').classList.remove('has-open');
