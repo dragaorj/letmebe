@@ -556,4 +556,17 @@ ScrollTrigger.create({ start: 0, end: 'max', onUpdate: (s) => {
   toTop.classList.toggle('is-visible', s.scroll() > innerHeight * 0.8);
   ring.style.strokeDashoffset = String(132 * (1 - s.progress));
 } });
-toTop.addEventListener('click', () => { lenis ? lenis.scrollTo(0, { duration: 2.2 }) : window.scrollTo({ top: 0, behavior: 'smooth' }); });
+// voltar ao topo: uma cortina cobre a tela, a página pula para o início e a cortina sai
+// (rolar suave por todas as cenas presas fazia o pote e os abacates "atropelarem" as animações)
+let topBusy = false;
+const curtain = document.createElement('div'); curtain.className = 'top-curtain'; document.body.appendChild(curtain);
+toTop.addEventListener('click', () => {
+  if (topBusy) return; topBusy = true;
+  gsap.timeline({ onComplete: () => { topBusy = false; } })
+    .to(curtain, { autoAlpha: 1, duration: 0.35, ease: 'power2.in' })
+    .add(() => {
+      if (lenis) { lenis.stop(); lenis.scrollTo(0, { immediate: true, force: true }); lenis.start(); } else window.scrollTo(0, 0);
+      ScrollTrigger.update();
+    })
+    .to(curtain, { autoAlpha: 0, duration: 0.6, ease: 'power2.out', delay: 0.15 });
+});
