@@ -151,6 +151,11 @@ ScrollTrigger.create({ start: 0, end: 'max', onUpdate: (s) => {
   else if (y < lastY - 6 || y < 500) header.classList.remove('is-hidden');
   lastY = y;
 } });
+// página aberta/recarregada já rolada: o menu já nasce compacto (sem esperar um scroll acontecer)
+{ const applyCompact = () => { const y = window.scrollY; header.classList.toggle('is-compact', y > 80); root.classList.toggle('past-hero', y > 80);
+    const hc = header.querySelector('.header__cta'); if (hc) hc.tabIndex = y > 80 ? 0 : -1; };
+  applyCompact(); addEventListener('load', applyCompact); addEventListener('pageshow', applyCompact);
+  ScrollTrigger.addEventListener('refresh', applyCompact); requestAnimationFrame(applyCompact); setTimeout(applyCompact, 400); }
 
 /* ---------------- Palco 3D ---------------- */
 const canvas = $('.stage');
