@@ -370,10 +370,10 @@ function buildScroll() {
     if (innerWidth <= 900) {
       // celular: o círculo vai do alto da tela (logo abaixo do menu) até perto do rodapé da tela, cortado nas laterais
       const H = stage.screenH ? stage.screenH() : innerHeight;
-      const D = Math.max(innerWidth * 1.1, 2 * Math.min(j.y - 165, H - j.y - 34));   // o ingrediente do topo passa abaixo do menu
+      const D = Math.max(innerWidth * 1.1, 2 * Math.min(j.y - 165, H - j.y - 44));   // o ingrediente do topo passa abaixo do menu
       orbitEl.style.width = D.toFixed(0) + 'px';
       // título menor, logo acima do pote
-      ingTitle.style.setProperty('top', Math.max(84, j.y - innerWidth * 0.34 - ingTitle.offsetHeight).toFixed(0) + 'px', 'important');
+      ingTitle.style.setProperty('top', Math.max(84, j.y - innerWidth * 0.29 - ingTitle.offsetHeight).toFixed(0) + 'px', 'important');
     } else {
       // computador: círculo maior em telas baixas (notebook), sem achatar
       const vert = Math.min(j.y - 178, innerHeight - j.y - 46);
@@ -389,6 +389,7 @@ function buildScroll() {
   const orbitList = $('.orbit__list'); let orbitRot = 0, orbitHold = false;
   const orbitChips = $$('.orbit .chip'), orbitItems = $$('.orbit .orbit__item'); let autoK = -1, autoT = 0, lastAuto = -1;
   window.__orbitAutoReset = (k) => { autoK = -1; lastAuto = k === undefined ? -1 : k; };
+  orbitChips.forEach((c) => { const h = document.createElement('em'); h.className = 'chip__hint'; h.setAttribute('aria-hidden', 'true'); h.dataset.i18n = 'ing.hint'; h.textContent = (DICT[document.documentElement.lang === 'en' ? 'en' : 'pt'] || {})['ing.hint'] || 'Clique para saber mais'; c.insertBefore(h, c.querySelector('.chip__plus')); });
   // só para de girar com o mouse em cima de um ingrediente (não no meio do círculo)
   orbitChips.forEach((c) => { c.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') orbitHold = true; }); c.addEventListener('pointerleave', () => (orbitHold = false)); });
   gsap.ticker.add((t, dt) => {
@@ -396,17 +397,11 @@ function buildScroll() {
     let isOpen = orbitList.querySelector('.chip[aria-expanded="true"]');
     root.classList.toggle('ing-focus', !!isOpen && S.gather > 0.5 && S.sink < 0.2);   // cartão aberto: o resto fica embaçado
     // celular: o ingrediente que chega embaixo, no meio, abre sozinho, fica um tempinho e fecha; o círculo segue girando
-    if (innerWidth <= 900 && !window.__orbitManual) {
-      const chips = orbitChips;
-      if (autoK >= 0) {
-        autoT -= dt;
-        if (autoT <= 0) { chips[autoK].setAttribute('aria-expanded', 'false'); lastAuto = autoK; autoK = -1; isOpen = null; }
-      } else if (!isOpen) {
-        [-135, -45, 135, 45].forEach((base, k) => {
-          const ang = ((base + orbitRot) % 360 + 360) % 360;
-          if (autoK < 0 && k !== lastAuto && Math.abs(ang - 90) < 1.2) { autoK = k; autoT = 2800; chips[k].setAttribute('aria-expanded', 'true'); isOpen = chips[k]; }
-        });
-      }
+    if (innerWidth <= 900) {
+      [-135, -45, 135, 45].forEach((base, k) => {
+        const ang = ((base + orbitRot) % 360 + 360) % 360;
+        orbitChips[k].classList.toggle('is-hint', !isOpen && Math.abs(ang - 90) < 14);   // alinhado embaixo, no meio
+      });
     }
     if (!orbitHold && !isOpen && !reduce) orbitRot = (orbitRot + dt * (innerWidth <= 900 ? 0.011 : 0.006)) % 360;   // no celular gira um pouco mais rápido: um ingrediente passa por baixo a cada ~8 s
     orbitList.style.setProperty('--rot', orbitRot.toFixed(2) + 'deg');

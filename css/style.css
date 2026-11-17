@@ -1602,3 +1602,20 @@ html:has(.header.is-compact) .mnav__a11y{display:block}
 @media (max-width:760px) and (min-height:721px){.texture__title{top:25.5svh!important}}   /* título + pote centralizados juntos no celular */
 .header:not(.is-compact) .header__nav{height:var(--hbtn);box-sizing:border-box;align-items:center}
 .pro__kick::after{content:none!important;display:none!important}
+
+/* celular: título dos ingredientes um pouco menor; dica "Clique para saber mais" com pulso no "+" alinhado embaixo */
+@media (max-width:760px){.ingredients__title{font-size:clamp(26px,7.6vw,34px)!important}}
+.chip__hint{display:none}
+@media (max-width:900px){
+  .orbit .chip{position:relative}
+  .chip__hint{display:block;position:static;margin:8px auto 0;transform:translateY(4px);white-space:nowrap;font-family:var(--f-label);font-style:italic;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--ouro-ink);opacity:0;pointer-events:none;transition:opacity .5s var(--ease),transform .5s var(--ease)}
+  .orbit .chip.is-hint .chip__hint{opacity:1;transform:none}
+  @keyframes plusPulse{0%{box-shadow:inset 0 0 0 1px rgba(191,167,119,.7),0 0 0 0 rgba(191,167,119,.55)}70%{box-shadow:inset 0 0 0 1px rgba(191,167,119,.7),0 0 0 12px rgba(191,167,119,0)}100%{box-shadow:inset 0 0 0 1px rgba(191,167,119,.7),0 0 0 0 rgba(191,167,119,0)}}
+}
+
+/* pulso suave e redondo no "+" do ingrediente alinhado embaixo (o "+" continua visível) */
+@media (max-width:900px){
+  .orbit .chip .chip__plus{position:relative!important}
+  .orbit .chip.is-hint .chip__plus::after{content:"";position:absolute;inset:0;border-radius:50%;pointer-events:none;animation:plusGlow 2s ease-in-out infinite}
+  @keyframes plusGlow{0%{box-shadow:0 0 0 0 rgba(191,167,119,.55)}70%{box-shadow:0 0 0 10px rgba(191,167,119,0)}100%{box-shadow:0 0 0 0 rgba(191,167,119,0)}}
+}
