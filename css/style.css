@@ -1707,3 +1707,11 @@ html:has(.header.is-compact) .mnav__a11y{display:block}
 
 /* apresentação: sem barrinha flutuante (controle pelo menu de acessibilidade) */
 .present-bar{display:none!important}
+
+/* modo apresentação: a linha em destaque recebe o mesmo visual do hover */
+.prow.is-hot{color:#fff}
+.prow.is-hot .prow__name{transform:translateX(24px);font-style:italic}
+.prow.is-hot .prow__go{transform:rotate(45deg);background:#F8F5F1;color:var(--verde);box-shadow:none}
+.prow.is-hot .prow__n svg{transform:rotate(90deg) scale(1.25);fill:#E2CFA6}
+.plist li:has(> .prow.is-hot) .prow,.plist li:has(+ li > .prow.is-hot) .prow{border-bottom-color:transparent!important}
+.plist:has(> li:nth-child(2) > .prow.is-hot){border-top-color:transparent!important}

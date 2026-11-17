@@ -514,6 +514,8 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
 
   return {
     state, creamScreen, jarScreen, jarBottom, jarRect,
+    // toque programado no creme (modo apresentação): x, z na superfície do creme (raio ~0,8)
+    knead(x, z, f = 0.035) { if (!cream) return; creamU.uT.value[touchIdx].set(x, z, f, 0); touchIdx = (touchIdx + 1) % TOUCH; },
     pause() { running = false; },
     resume() { pieces.forEach((p) => { p.off.set(0, 0, 0); p.vel.set(0, 0, 0); p.rot.set(0, 0, 0); p.rvel.set(0, 0, 0); }); if (!running) { running = true; clock.getDelta(); quality.reset(); requestAnimationFrame(frame); } },
     resetSpin() { idleRot = 0; userRot = 0; spinV = 0; },

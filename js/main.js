@@ -535,8 +535,17 @@ function buildScroll() {
     addEventListener('pointermove', (e) => { tx = e.clientX; ty = e.clientY; hasP = e.pointerType === 'mouse'; }, { passive: true });
     document.addEventListener('mouseleave', () => (hasP = false));
     gsap.ticker.add(() => { if (!fl) return;
-      const el = hasP ? document.elementFromPoint(tx, ty) : null, row = el && el.closest ? el.closest('.prow') : null;
+      let el = hasP ? document.elementFromPoint(tx, ty) : null, row = el && el.closest ? el.closest('.prow') : null;
+      // modo apresentação: a linha que passa pelo meio da tela fica "em hover" (destaque, foto e estilo), como se o mouse estivesse nela
+      if (root.classList.contains('presenting')) {
+        row = null; let bd = innerHeight * 0.22;
+        $$('.plist .prow').forEach((r) => { const b = r.getBoundingClientRect(), d = Math.abs(b.top + b.height / 2 - innerHeight * 0.5); if (d < bd) { bd = d; row = r; } });
+        if (row) { const b = row.getBoundingClientRect(); tx = innerWidth * 0.62; ty = b.top + b.height / 2; }
+      }
       if (row !== cur) {
+        const wasHot = cur && cur.classList.contains('is-hot'); if (cur) cur.classList.remove('is-hot');
+        if (row && root.classList.contains('presenting')) { row.classList.add('is-hot'); row.dispatchEvent(new PointerEvent('pointerenter', { pointerType: 'mouse' })); }
+        else if (!row && wasHot) $('.plist').dispatchEvent(new PointerEvent('pointerleave', { pointerType: 'mouse' }));
         cur = row;
         if (row) { if (fi.getAttribute('src') !== row.dataset.img) fi.src = row.dataset.img; gsap.to(fl, { opacity: 1, scale: 1, duration: 0.5, ease: 'expo.out', overwrite: true }); }
         else gsap.to(fl, { opacity: 0, scale: 0.6, duration: 0.35, ease: 'power2.in', overwrite: true });
@@ -882,14 +891,20 @@ toTop.addEventListener('click', () => window.__jumpTo(0));
   const KEY = 'lmb-present'; let speed = 5; try { speed = parseInt(localStorage.getItem(KEY), 10) || 5; } catch (e) {}
   speed = Math.max(1, Math.min(10, speed));
   const bar = $('.present-bar'), plays = $$('[data-present]'), ranges = $$('[data-speed-range]');
-  let on = false, paused = false, wait = 0, phase = 'run';
+  let on = false, paused = false, wait = 0, phase = 'run', ingDone = false, ingK = -1, ingT = 0, creamDone = false, creamT = 0, kneadT = 0;
+  // ingredientes: na apresentação, abre um por vez, rapidinho (a rolagem espera)
+  const ingOpen = (k) => {
+    if (innerWidth <= 760) { const d = $$('.ing-feat__dots button')[k]; d && d.click(); return; }
+    const c = $$('.orbit .chip')[k]; if (c && c.getAttribute('aria-expanded') !== 'true') c.click();
+  };
+  const ingClose = () => { if (innerWidth > 760 && window.__ingPopClose) window.__ingPopClose(); };
   const sync = () => {
     plays.forEach((b) => { b.setAttribute('aria-pressed', String(on)); b.querySelector('b').textContent = on ? '❚❚' : '▶'; });
     ranges.forEach((r) => { r.value = speed; r.style.setProperty('--p', ((speed - 1) / 9 * 100).toFixed(1) + '%'); const v = r.parentElement.querySelector('.a11y-speed__v'); if (v) v.textContent = speed; });
     root.classList.toggle('presenting', on); root.classList.toggle('present-paused', on && paused);
     bar.setAttribute('aria-hidden', String(!on));
   };
-  const stop = () => { on = false; paused = false; sync(); };
+  const stop = () => { if (phase === 'ing') ingClose(); on = false; paused = false; phase = 'run'; sync(); };
   const start = () => {
     on = true; paused = false; phase = 'run'; wait = 1.2;   // pequena pausa antes de começar
     $('.a11y-btn') && $('.a11y-btn').setAttribute('aria-expanded', 'false'); $('.a11y-panel') && $('.a11y-panel').classList.remove('is-open');
@@ -906,6 +921,23 @@ toTop.addEventListener('click', () => window.__jumpTo(0));
     if (!on || paused || !lenis) return;
     const sec = Math.min(0.2, dt / 1000);
     if (wait > 0) { wait -= sec; return; }
+    if (S.gather < 0.3) ingDone = false;
+    if (S.face < 0.5) creamDone = false;
+    // creme: a rolagem espera e um dedo invisível mexe o creme em círculo (como na mão)
+    if (phase === 'run' && !creamDone && S.face > 0.97 && S.lidBack < 0.01) { phase = 'cream'; creamT = 0; kneadT = 0; }
+    if (phase === 'cream') {
+      creamT += sec; kneadT -= sec; const DUR = 3.4;
+      if (kneadT <= 0 && creamT < DUR) { const a = creamT / DUR * Math.PI * 3.2 + 0.6, r = 0.42 + Math.sin(creamT * 5) * 0.06; stage.knead(Math.cos(a) * r, Math.sin(a) * r); kneadT = 0.045; }
+      if (creamT >= DUR + 0.8) { creamDone = true; phase = 'run'; }
+      return;
+    }   // saiu dos ingredientes: na próxima passada abre de novo
+    if (phase === 'run' && !ingDone && S.gather > 0.92 && S.sink < 0.02) { phase = 'ing'; ingK = -1; ingT = 0.4; }
+    if (phase === 'ing') {
+      ingT -= sec; if (ingT > 0) return;
+      ingK++;
+      if (ingK >= 4) { ingClose(); ingDone = true; phase = 'run'; wait = 0.5; return; }
+      ingOpen(ingK); ingT = 1.6; return;
+    }
     if (phase === 'run') {
       const lim = lenis.limit || (document.documentElement.scrollHeight - innerHeight);
       if (lenis.scroll >= lim - 2) { phase = 'end'; wait = 3; return; }   // fim: segura um pouco no rodapé
