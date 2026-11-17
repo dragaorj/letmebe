@@ -350,8 +350,8 @@ function buildScroll() {
   const orbitList = $('.orbit__list'); let orbitRot = 0, orbitHold = false;
   const orbitChips = $$('.orbit .chip'), orbitItems = $$('.orbit .orbit__item'); let autoK = -1, autoT = 0, lastAuto = -1;
   window.__orbitAutoReset = (k) => { autoK = -1; lastAuto = k === undefined ? -1 : k; };
-  orbitList.addEventListener('pointerenter', () => (orbitHold = true));
-  orbitList.addEventListener('pointerleave', () => (orbitHold = false));
+  // só para de girar com o mouse em cima de um ingrediente (não no meio do círculo)
+  orbitChips.forEach((c) => { c.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') orbitHold = true; }); c.addEventListener('pointerleave', () => (orbitHold = false)); });
   gsap.ticker.add((t, dt) => {
     if (S.gather < 0.02 || S.sink > 0.99) return;   // só gira enquanto os ingredientes estão na tela
     let isOpen = orbitList.querySelector('.chip[aria-expanded="true"]');
