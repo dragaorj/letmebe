@@ -66,7 +66,8 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
 
   /* Estado animado pelo scroll (main.js) */
   const state = {
-    x: 0, y: -2.8, z: 0, scale: 0.9, rotY: -0.35, face: 0,  // face: 0 = de lado, 1 = creme de frente para a câmera
+    x: 0, y: -2.8, z: 0, scale: 0.9, rotY: 0.08, face: 0,   // rotY 0.08 = logo Let Me Be centralizada, de frente
+     // face: 0 = de lado, 1 = creme de frente para a câmera
     spin: 1, open: 0, lidAway: 0, cream: 0, burst: 0, orbit: 1, gather: 0, sink: 0, float: 0, shadow: 0.16, visible: 1, offsetX: 0.95
   };
 
@@ -313,19 +314,20 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
     const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
     if (!dragging) {
       userRot += spinV; spinV *= 0.94;
-      // na cena do creme o pote volta sozinho para a posição normal ao soltar; nas outras, volta devagar
-      const back = ease(state.face) > 0.5 ? 0.9 : 0.995;
+      // ao soltar, o pote sempre volta sozinho para a logo de frente
+      const back = ease(state.face) > 0.5 ? 0.9 : 0.93;
       userRot *= back; userRotX *= back > 0.95 ? 0.92 : back;
       if (back < 0.95) spinV *= 0.8;
     }
     // giro lento na horizontal enquanto não há scroll; ao rolar, volta suave para a frente
-    if (state.spin > 0.01) idleRot += dt * 0.13 * state.spin;   // bem devagar: a logo fica em tela por mais tempo
-    else { const tgt = Math.round(idleRot / (Math.PI * 2)) * Math.PI * 2; idleRot += (tgt - idleRot) * 0.06; }
+    // balanço próprio bem lento em volta da frente (nunca mostra a parte de trás); não depende do scroll
+    // (teste) sem giro próprio: o pote só gira com o scroll
+    { const tgt = 0; idleRot += (tgt - idleRot) * 0.04; }
     ndcS.lerp(hasPointer ? ndc : zero, 0.035);
 
     // câmera: aproxima e sobe conforme "face" (mergulho no creme)
     const f = ease(state.face);
-    const camZ = (mobile ? 12.2 : 10.4) - f * (mobile ? 3.4 : 3.85);   // no celular o creme aproxima menos (o título continua visível)
+    const camZ = (mobile ? 12.2 : 10.4) - f * (mobile ? 3.4 : 2.95);   // no celular o creme aproxima menos (o título continua visível)
     camera.position.set(0, 1.7 + f * 1.4, camZ);
     camera.lookAt(0, 1.0 + f * 0.3, 0);
 
@@ -335,7 +337,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
     jarRoot.scale.setScalar(state.scale * (mobile ? 0.8 + 0.08 * (1 - state.open) : 1));   // no celular o pote do hero aparece maior
     jarRoot.visible = state.visible > 0.01;
     tilt.set(-ndcS.y * 0.09, ndcS.x * 0.07);
-    jarRoot.rotation.set(0, state.rotY + userRot + idleRot + ndcS.x * 0.18, 0);
+    jarRoot.rotation.set(0, state.rotY + userRot + idleRot + ndcS.x * 0.07, 0);
     jarTilt.position.y = 0.7; jarModel && (jarModel.position.y = -0.7);   // inclina em torno do centro do pote
     jarTilt.rotation.set(tilt.x + f * 0.95 + userRotX, 0, tilt.y);
     ground.material.opacity = state.shadow * (1 - f);

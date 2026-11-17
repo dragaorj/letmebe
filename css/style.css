@@ -1390,3 +1390,77 @@ html:has(.header.is-compact) .mnav__a11y{display:block}
   .pro__specs{grid-column:1!important;grid-row:1!important;width:100%;max-width:340px}
   .pro__copy{grid-column:1!important;grid-row:2!important}
 }
+/* seletor de idioma: mais respiro entre PT / EN, hover arredondado e cor sempre legível */
+.header .lang{gap:2px;align-items:center}
+.header .lang button{padding:6px 12px!important;border-radius:999px!important}
+.header .lang button:hover{border-radius:999px!important}
+/* no topo (fundinho claro) o texto fica escuro mesmo sobre seções escuras */
+.header:not(.is-compact) .lang button,.header.on-dark:not(.is-compact) .lang button{color:var(--ink-soft)!important}
+.header:not(.is-compact) .lang button[aria-pressed="true"],.header.on-dark:not(.is-compact) .lang button[aria-pressed="true"]{color:var(--grafite)!important;background:transparent!important}
+.header:not(.is-compact) .lang button:hover,.header.on-dark:not(.is-compact) .lang button:hover{color:var(--verde)!important;background:rgba(0,133,117,.1)!important}
+.header.on-dark:not(.is-compact) .a11y-btn{color:var(--grafite)!important}
+.header.on-dark:not(.is-compact) .a11y-btn:hover{color:var(--verde)!important}
+
+/* convite para rolar: bem sutil, embaixo do pote; some no primeiro scroll */
+.hero__scroll{position:absolute;left:50%;bottom:clamp(18px,3.2vh,34px);z-index:3;display:grid;justify-items:center;gap:10px;transform:translateX(-50%);
+  pointer-events:none;opacity:.55;transition:opacity .6s var(--ease)}
+.hero__scroll span{font-family:var(--f-label);font-size:9.5px;font-weight:500;letter-spacing:.24em;text-transform:uppercase;color:var(--ink-soft)}
+.hero__scroll i{position:relative;width:1px;height:34px;background:rgba(64,64,64,.18);overflow:hidden}
+.hero__scroll i::after{content:"";position:absolute;left:0;top:-40%;width:100%;height:40%;background:var(--verde);animation:heroScroll 2.4s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes heroScroll{0%{top:-40%}100%{top:100%}}
+.past-hero .hero__scroll,.is-loading .hero__scroll{opacity:0}
+@media (max-width:760px){.hero__scroll{display:none}}
+@media (prefers-reduced-motion:reduce){.hero__scroll i::after{animation:none;top:30%}}
+/* telas em pé no computador (ex.: 1080×1920): título e creme juntos, no meio da tela */
+@media (min-width:761px) and (max-aspect-ratio:85/100){.texture__title{top:20vh!important}}
+/* convite para rolar: um mouse em contorno com a bolinha descendo (sutil) */
+.hero__scroll{gap:0!important;opacity:.6}
+.hero__scroll .hero__mouse{position:relative;display:block;width:22px;height:34px;border:1.4px solid rgba(64,64,64,.55);border-radius:12px;background:none;overflow:visible}
+.hero__scroll .hero__mouse::after{content:"";position:absolute;left:50%;top:7px;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:var(--verde);animation:heroMouse 2s cubic-bezier(.65,0,.35,1) infinite}
+@keyframes heroMouse{0%{transform:translateY(0);opacity:0}20%{opacity:1}70%{transform:translateY(12px);opacity:0}100%{transform:translateY(12px);opacity:0}}
+@media (prefers-reduced-motion:reduce){.hero__scroll .hero__mouse::after{animation:none;opacity:1}}
+/* mouse do convite: verde, bolinha descendo bem suave */
+.hero__scroll{opacity:.85!important}
+.hero__scroll .hero__mouse{width:24px;height:38px;border:1.5px solid rgba(0,133,117,.7)!important;border-radius:14px}
+.hero__scroll .hero__mouse::after{top:8px;width:5px;height:5px;margin-left:-2.5px;background:var(--verde)!important;animation:heroMouse2 2.6s cubic-bezier(.45,0,.25,1) infinite!important}
+@keyframes heroMouse2{0%{transform:translateY(0);opacity:0}18%{opacity:1}62%{transform:translateY(13px);opacity:0}100%{transform:translateY(13px);opacity:0}}
+/* hero (computador): o texto "3 ativos" e o texto de baixo alinhados pela esquerda e mais para dentro, longe da folha */
+@media (min-width:761px){
+  .hero{--hr:max(var(--pad),min(15vw,26vh));--hw:min(320px,24vw)}
+  .hero__meta{right:var(--hr)!important;width:var(--hw)!important;justify-content:flex-start}
+  .hero__side{right:var(--hr)!important;width:var(--hw)!important}
+}
+/* mouse do convite: na mesma linha da base do botão e do texto da direita */
+@media (min-width:761px){.hero__scroll{bottom:calc(8vh - 19px)!important}}
+/* hero (computador): textos da direita terminam na margem direita do site (mesma do menu), alinhados entre si pela esquerda */
+@media (min-width:761px){
+  .hero__meta,.hero__side{right:var(--pad)!important}
+}
+/* alinhamento único do site: todo conteúdo começa e termina nas mesmas margens do menu (--pad), em qualquer tela */
+.wrap{max-width:none!important;margin-left:0!important;margin-right:0!important;padding-left:var(--pad)!important;padding-right:var(--pad)!important}
+@media (min-width:901px){.essence .essence__media .frame--tall{width:100%!important;aspect-ratio:auto!important;height:min(80vh,860px)!important;max-height:none!important}}
+/* Linhas: no hover, as linhas cinzas em volta do destaque somem */
+.prow{transition:color .5s var(--ease),border-color .4s var(--ease)!important}
+.plist li:has(> .prow:hover) .prow,.plist li:has(+ li > .prow:hover) .prow{border-bottom-color:transparent!important}
+.plist:has(> li:first-child > .prow:hover){border-top-color:transparent!important}
+/* convite para rolar: o mouse e a frase ao lado, que aparece e some devagar, em loop */
+.hero__scroll{display:flex!important;align-items:center;gap:12px!important}
+.hero__scroll .hero__scrolltxt{font-family:var(--f-label);font-size:10px;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--verde);white-space:nowrap;
+  animation:heroScrollTxt 3.2s ease-in-out infinite}
+@keyframes heroScrollTxt{0%,100%{opacity:0}30%,70%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.hero__scroll .hero__scrolltxt{animation:none;opacity:1}}
+.hero__scroll{gap:0!important}
+.hero__scroll .hero__scrolltxt{position:absolute;left:100%;top:50%;margin-left:14px;transform:translateY(-50%)}
+/* frase do convite: centralizada acima do mouse */
+.hero__scroll .hero__scrolltxt{left:50%!important;top:auto!important;bottom:100%!important;margin:0 0 12px!important;transform:translateX(-50%)!important}
+/* convite para rolar no mesmo grafite das palavras grandes do topo */
+.hero__scroll .hero__scrolltxt{color:var(--grafite)!important}
+.hero__scroll .hero__mouse{border-color:var(--grafite)!important}
+/* idioma e ícone: no hover só a cor muda para verde, sem fundo em volta */
+.header .lang button:hover,.header:not(.is-compact) .lang button:hover,.header.on-dark:not(.is-compact) .lang button:hover{background:transparent!important;color:var(--verde)!important}
+.header:not(.is-compact) .a11y-btn:hover{background:rgba(248,245,241,.86)!important}
+.header.is-compact .a11y-btn:hover{background:transparent!important}
+/* idioma já selecionado: sem hover (não muda de cor) */
+.header .lang button[aria-pressed="true"]{pointer-events:none;cursor:default}
+/* Passo Único: contorno das palavras de fundo mais apagado */
+.pro__marquee p{-webkit-text-stroke:1.2px rgba(167,222,212,.14)!important}

@@ -121,7 +121,14 @@ document.addEventListener('pointerdown', (e) => { if (root.classList.contains('m
 $$('.mnav a[href^="#"]').forEach((l) => l.addEventListener('click', () => setMenu(false), true));
 $$('a[href^="#"]').forEach((a) => a.addEventListener('click', (e) => {
   const id = a.getAttribute('href'); const t = id.length > 1 && $(id); if (!t) return;
-  e.preventDefault(); lenis ? lenis.scrollTo(t, { duration: 1.6 }) : t.scrollIntoView({ behavior: 'smooth' });
+  e.preventDefault();
+  let y = null;
+  if (id === '#ingredientes') {   // ingredientes: o ponto em que os abacates já estão no círculo
+    const st = ScrollTrigger.getAll().find((x) => x.trigger && x.trigger.classList && x.trigger.classList.contains('story'));
+    if (st && st.animation) y = st.start + (st.end - st.start) * (innerWidth <= 760 ? 7.05 : 7.35) / st.animation.duration();
+  }
+  if (y === null) y = t.getBoundingClientRect().top + (lenis ? lenis.scroll : scrollY);
+  if (window.__jumpTo) window.__jumpTo(y); else if (lenis) lenis.scrollTo(y, { immediate: true }); else window.scrollTo(0, y);
 }));
 
 /* ---------------- Header ---------------- */
@@ -225,6 +232,7 @@ function buildScroll() {
     .to('.leafg--tr', { xPercent: 150, yPercent: -150, rotate: 18 }, 0)   // saem deslizando pelo canto (sem fade) e voltam ao subir
     .to('.leafg--l', { xPercent: -150, yPercent: 150, rotate: -18 }, 0);
   // 1 · Hero: desenrosca a tampa, creme cresce, abacates explodem (pico)
+  const PORTRAIT_FACE_Y = 0.62, LAND_FACE_Y = 0.05;   // computador: o pote encosta de leve nas letras do título   // telas em pé (monitor vertical): o creme sobe para perto do título
   const MOB = innerWidth <= 760, HERO_Y = MOB ? (innerHeight < 720 ? 0.3 : 0.22) : -0.3, SH = 2.6;   // SH: duração extra do manifesto
   // trava a posição do hero dentro da própria linha do tempo (ao voltar ao topo o pote volta ao lugar certo)
   tl.fromTo(S, { y: HERO_Y, x: 0 }, { y: HERO_Y, x: 0, duration: 1, immediateRender: false }, 0)
@@ -232,22 +240,22 @@ function buildScroll() {
     .to(S, { open: 1, duration: 0.75, ease: 'power1.inOut' }, 0)
     .to(S, { cream: 1, duration: 0.5 }, 0.4)
     .to(S, { burst: 1, duration: 0.6, ease: 'none' }, 0.55)
-    .to(S, { rotY: 0.1, scale: 0.95, duration: 1 }, 0)
+    .to(S, { rotY: 0.08 + 0.45, scale: 0.95, duration: 1 }, 0)   // começa com a logo de frente e gira para a direita com o scroll
     .to('.hero__title', { yPercent: -30, scale: 0.92, autoAlpha: 0, duration: 0.6 }, 0.5)
     .to('.hero__foot', { autoAlpha: 0, y: 30, duration: 0.35 }, 0.7)
   // 2 · Manifesto: pote ao centro, órbita larga, um giro completo
     .fromTo(S, { y: HERO_Y }, { immediateRender: false, x: 0, y: MOB ? -1.25 : 0, scale: 0.88, orbit: 1.25, duration: 0.8, ease: 'power2.inOut' }, 1.0)   // celular: pote na metade de baixo, texto em cima
-    .to(S, { rotY: 0.1 + TAU, duration: 1.4 + SH, ease: 'power1.inOut' }, 1.0)
+    .to(S, { rotY: 0.08 + TAU, duration: 1.4 + SH, ease: 'power1.inOut' }, 1.0)   // volta completa para a direita: chega aos ingredientes com a logo de frente
     .to(S, { lidAway: 1, duration: 0.6, ease: 'power2.in' }, 1.0)
     .to(root, { '--sky': '#ECECEA', duration: 0.6 }, 1.0)
   // 3 · Ingredientes: céu verde profundo, abacates formam o arco
     .to(root, { '--sky': '#D1D5BB', '--glow': 0.6, duration: 0.5 }, 3.1 + SH)
     .to(S, { gather: 1, scale: innerWidth <= 760 ? 1 : 0.86, y: innerWidth <= 760 ? 0.05 : 0.25, shadow: 0, orbit: 1, duration: 1.5, ease: 'power1.inOut' }, 2.7 + SH)
-    .to(S, { rotY: 0.1 + TAU + 0.5, duration: 2.2 }, 3.1 + SH)
+    .to(S, { rotY: 0.08 + TAU, duration: 2.2 }, 3.1 + SH)
   // 4 · Textura: abacates recolhem, pote vira o creme para a câmera
     .to(S, { sink: 1, duration: MOB ? 1.2 : 1.1, ease: 'power1.inOut' }, (MOB ? 4.75 : 5.3) + SH)   // os abacates seguem no sentido horário e mergulham no pote, um a um   // celular: os abacates voltam para o pote enquanto os cartões passam
     .to(root, { '--sky': '#DCDAD6', '--glow': 0.45, duration: 0.5 }, 5.5 + SH)
-    .to(S, { face: 1, x: 0, y: MOB ? (innerHeight < 720 ? -0.15 : 0.3) : -0.3, scale: 1.0, rotY: TAU, shadow: 0.1, duration: 0.9, ease: 'power2.inOut' }, 5.6 + SH)   // celular: pote um pouco mais alto, perto do título
+    .to(S, { face: 1, x: 0, y: MOB ? (innerHeight < 720 ? -0.15 : 0.3) : (innerWidth / innerHeight < 0.85 ? PORTRAIT_FACE_Y : LAND_FACE_Y), scale: 1.0, rotY: TAU, shadow: 0.1, duration: 0.9, ease: 'power2.inOut' }, 5.6 + SH)   // celular: pote um pouco mais alto, perto do título
     .to(S, { face: 1, duration: 0.7 }, 6.5 + SH);
   // header claro sobre o fundo escuro
   // menu claro sempre que o que está atrás dele for escuro (Passo Único e rodapé)
@@ -659,13 +667,15 @@ ScrollTrigger.create({ start: 0, end: 'max', onUpdate: (s) => {
 // (rolar suave por todas as cenas presas fazia o pote e os abacates "atropelarem" as animações)
 let topBusy = false;
 const curtain = document.createElement('div'); curtain.className = 'top-curtain'; document.body.appendChild(curtain);
-toTop.addEventListener('click', () => {
+// pulo com cortina: usado pelo "voltar ao topo" e pelos links do menu (a cena já aparece montada no destino)
+window.__jumpTo = (y) => {
   if (topBusy) return; topBusy = true;
   gsap.timeline({ onComplete: () => { topBusy = false; } })
     .to(curtain, { autoAlpha: 1, duration: 0.35, ease: 'power2.in' })
     .add(() => {
-      if (lenis) { lenis.stop(); lenis.scrollTo(0, { immediate: true, force: true }); lenis.start(); } else window.scrollTo(0, 0);
+      if (lenis) { lenis.stop(); lenis.scrollTo(y, { immediate: true, force: true }); lenis.start(); } else window.scrollTo(0, y);
       ScrollTrigger.update();
     })
-    .to(curtain, { autoAlpha: 0, duration: 0.6, ease: 'power2.out', delay: 0.15 });
-});
+    .to(curtain, { autoAlpha: 0, duration: 0.7, ease: 'power2.out', delay: 0.35 });   // tempo para o 3D assentar antes de mostrar
+};
+toTop.addEventListener('click', () => window.__jumpTo(0));
