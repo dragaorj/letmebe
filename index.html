@@ -41,9 +41,9 @@ try{var a=JSON.parse(localStorage.getItem('lmb-a11y')||'{}');for(var k in a){if(
 <link rel="preload" href="assets/fonts/PlayfairDisplay.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/PlayfairDisplay-Italic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=9c8222d264">
-<link rel="preload" href="assets/3d/jar.glb?v=9c8222d264" as="fetch" crossorigin>
-<script>window.__V="9c8222d264"</script>
+<link rel="stylesheet" href="css/style.css?v=ee65b65de9">
+<link rel="preload" href="assets/3d/jar.glb?v=ee65b65de9" as="fetch" crossorigin>
+<script>window.__V="ee65b65de9"</script>
 </head>
 <body class="is-loading">
 <a class="skip-link" href="#top" data-i18n="a11y.skip">Pular para o conteúdo</a>
@@ -81,6 +81,10 @@ try{var a=JSON.parse(localStorage.getItem('lmb-a11y')||'{}');for(var k in a){if(
       <button type="button" class="a11y-opt" data-a11y="motion" aria-pressed="false"><b aria-hidden="true">❚❚</b><span data-i18n="a11y.motion">Menos movimento</span></button>
       <button type="button" class="a11y-opt" data-a11y="links" aria-pressed="false"><b aria-hidden="true">U̲</b><span data-i18n="a11y.links">Destacar links</span></button>
       </div>
+      <div class="a11y-present">
+        <button type="button" class="a11y-opt a11y-play" data-present aria-pressed="false" data-tip-k="present"><b aria-hidden="true">▶</b><span data-i18n="a11y.present">Modo apresentação</span></button>
+        <label class="a11y-speed"><span data-i18n="a11y.speed">Velocidade</span><input type="range" min="1" max="10" step="1" value="5" data-speed-range data-tip-k="speed"><b class="a11y-speed__v">5</b></label>
+      </div>
       </div>
     </div>
     <a class="btn btn--dark btn--sm header__cta" href="https://www.letmebe.com.br/collections/mascara" target="_blank" rel="noopener" tabindex="-1"><span data-i18n="hero.cta">Comprar na loja</span><i class="arrow" aria-hidden="true"><svg class="ic-arr" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg></i></a>
@@ -104,6 +108,10 @@ try{var a=JSON.parse(localStorage.getItem('lmb-a11y')||'{}');for(var k in a){if(
       <button type="button" class="a11y-opt" data-a11y="contrast" aria-pressed="false"><b aria-hidden="true">◐</b><span data-i18n="a11y.contrast">Alto contraste</span></button>
       <button type="button" class="a11y-opt" data-a11y="motion" aria-pressed="false"><b aria-hidden="true">❚❚</b><span data-i18n="a11y.motion">Menos movimento</span></button>
       <button type="button" class="a11y-opt" data-a11y="links" aria-pressed="false"><b aria-hidden="true">U̲</b><span data-i18n="a11y.links">Destacar links</span></button>
+      </div>
+      <div class="a11y-present">
+        <button type="button" class="a11y-opt a11y-play" data-present aria-pressed="false" data-tip-k="present"><b aria-hidden="true">▶</b><span data-i18n="a11y.present">Modo apresentação</span></button>
+        <label class="a11y-speed"><span data-i18n="a11y.speed">Velocidade</span><input type="range" min="1" max="10" step="1" value="5" data-speed-range data-tip-k="speed"><b class="a11y-speed__v">5</b></label>
       </div>
   </section>
   <div class="mnav__foot">
@@ -366,6 +374,12 @@ try{var a=JSON.parse(localStorage.getItem('lmb-a11y')||'{}');for(var k in a){if(
   </section>
 </main>
 
+<div class="present-bar" aria-hidden="true">
+  <span class="present-bar__dot"></span><span data-i18n="a11y.presenting">Apresentação</span>
+  <button type="button" class="present-bar__btn" data-pp data-tip-k="pause"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="i-pause" d="M8 5v14M16 5v14"/><path class="i-play" d="M8 5l11 7-11 7z"/></svg></button>
+  <button type="button" class="present-bar__btn" data-stop data-tip-k="stop"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+</div>
+<div class="tip" role="tooltip" aria-hidden="true"></div>
 <div class="ing-feat" aria-live="polite">
   <div class="ing-feat__body"><small class="ing-feat__n"></small><b class="ing-feat__t"></b><span class="ing-feat__s"></span><p class="ing-feat__m"></p></div>
   <div class="ing-feat__dots" role="tablist" data-i18n-aria="ing.dots" aria-label="Ingredientes"><button type="button" role="tab"></button><button type="button" role="tab"></button><button type="button" role="tab"></button><button type="button" role="tab"></button></div>
@@ -389,7 +403,7 @@ try{var a=JSON.parse(localStorage.getItem('lmb-a11y')||'{}');for(var k in a){if(
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
 } }
 </script>
-<script defer src="js/i18n.js?v=9c8222d264"></script>
-<script type="module" src="js/main.js?v=9c8222d264"></script>
+<script defer src="js/i18n.js?v=ee65b65de9"></script>
+<script type="module" src="js/main.js?v=ee65b65de9"></script>
 </body>
 </html>

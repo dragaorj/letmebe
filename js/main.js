@@ -143,12 +143,13 @@ const header = $('.header'); let lastY = 0, langBusy = false;
 ScrollTrigger.create({ start: 0, end: 'max', onUpdate: (s) => {
   if (langBusy) return;   // troca de idioma não mexe no menu
   const y = s.scroll();
-  if (root.classList.contains('menu-open') && Math.abs(y - menuY) > 40) setMenu(false);   // rolou: o menu fecha
+  const pres = root.classList.contains('presenting');   // apresentação: o menu fica sempre à mão (não some nem fecha com a rolagem)
+  if (!pres && root.classList.contains('menu-open') && Math.abs(y - menuY) > 40) setMenu(false);   // rolou: o menu fecha
   header.classList.toggle('is-compact', y > 80);
   root.classList.toggle('past-hero', y > 80);   // no primeiro scroll os textos e o CTA do hero saem (o CTA vai para o menu)
   const hc = header.querySelector('.header__cta'); if (hc) hc.tabIndex = y > 80 ? 0 : -1;   // ao rolar, o menu vira uma pílula flutuante
-  if (y > 500 && y > lastY + 6 && !root.classList.contains('menu-open')) header.classList.add('is-hidden');
-  else if (y < lastY - 6 || y < 500) header.classList.remove('is-hidden');
+  if (!pres && y > 500 && y > lastY + 6 && !root.classList.contains('menu-open')) header.classList.add('is-hidden');
+  else if (pres || y < lastY - 6 || y < 500) header.classList.remove('is-hidden');
   lastY = y;
 } });
 // página aberta/recarregada já rolada: o menu já nasce compacto (sem esperar um scroll acontecer)
@@ -824,11 +825,12 @@ $$('.chip').forEach((c) => c.addEventListener('click', () => {
   btn.addEventListener('click', (e) => { e.stopPropagation(); show(btn.getAttribute('aria-expanded') !== 'true'); });
   document.addEventListener('pointerdown', (e) => { if (!(e.target.closest && e.target.closest('.a11y'))) show(false); });
   addEventListener('keydown', (e) => { if (e.key === 'Escape') show(false); });
-  addEventListener('scroll', () => { if (header.classList.contains('is-compact')) show(false); }, { passive: true });
+  addEventListener('scroll', () => { if (header.classList.contains('is-compact') && !root.classList.contains('presenting')) show(false); }, { passive: true });
 }
 /* ---------------- Acessibilidade (menu) ---------------- */
 { const KEY = 'lmb-a11y'; let st = {}; try { st = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
-  const btns = $$('.a11y-opt');
+  const btns = $$('.a11y-opt[data-a11y]');   // só as opções de acessibilidade (o modo apresentação tem o próprio controle)
+  if ('undefined' in st) { delete st.undefined; try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} document.documentElement.classList.remove('a11y-undefined'); }
   const sync = () => btns.forEach((b) => b.setAttribute('aria-pressed', String(!!st[b.dataset.a11y])));
   sync();
   btns.forEach((b) => b.addEventListener('click', () => {
@@ -873,3 +875,106 @@ window.__jumpTo = (y) => {
     .to(curtain, { autoAlpha: 0, duration: 0.7, ease: 'power2.out', delay: 0.35 });   // tempo para o 3D assentar antes de mostrar
 };
 toTop.addEventListener('click', () => window.__jumpTo(0));
+
+/* ---------------- Modo apresentação: rolagem automática (menu de acessibilidade) ---------------- */
+// passa sozinho por todo o site na velocidade escolhida; no fim, volta ao topo e recomeça
+{ const pxs = (n) => 60 * Math.pow(1.39, n - 1);   // velocidade 1 a 10: de 60 até ~1150 pixels por segundo
+  const KEY = 'lmb-present'; let speed = 5; try { speed = parseInt(localStorage.getItem(KEY), 10) || 5; } catch (e) {}
+  speed = Math.max(1, Math.min(10, speed));
+  const bar = $('.present-bar'), plays = $$('[data-present]'), ranges = $$('[data-speed-range]');
+  let on = false, paused = false, wait = 0, phase = 'run';
+  const sync = () => {
+    plays.forEach((b) => { b.setAttribute('aria-pressed', String(on)); b.querySelector('b').textContent = on ? '❚❚' : '▶'; });
+    ranges.forEach((r) => { r.value = speed; r.style.setProperty('--p', ((speed - 1) / 9 * 100).toFixed(1) + '%'); const v = r.parentElement.querySelector('.a11y-speed__v'); if (v) v.textContent = speed; });
+    root.classList.toggle('presenting', on); root.classList.toggle('present-paused', on && paused);
+    bar.setAttribute('aria-hidden', String(!on));
+  };
+  const stop = () => { on = false; paused = false; sync(); };
+  const start = () => {
+    on = true; paused = false; phase = 'run'; wait = 1.2;   // pequena pausa antes de começar
+    $('.a11y-btn') && $('.a11y-btn').setAttribute('aria-expanded', 'false'); $('.a11y-panel') && $('.a11y-panel').classList.remove('is-open');
+    if (root.classList.contains('menu-open')) setMenu(false);
+    sync();
+  };
+  plays.forEach((b) => b.addEventListener('click', () => (on ? stop() : start())));
+  ranges.forEach((r) => r.addEventListener('input', () => { speed = parseInt(r.value, 10) || 5; try { localStorage.setItem(KEY, String(speed)); } catch (e) {} sync(); }));
+  bar.querySelector('[data-pp]').addEventListener('click', () => { paused = !paused; sync(); });
+  bar.querySelector('[data-stop]').addEventListener('click', stop);
+  addEventListener('keydown', (e) => { if (!on) return; if (e.key === 'Escape') stop(); else if (e.key === ' ') { e.preventDefault(); paused = !paused; sync(); } });
+  sync();
+  gsap.ticker.add((t, dt) => {
+    if (!on || paused || !lenis) return;
+    const sec = Math.min(0.2, dt / 1000);
+    if (wait > 0) { wait -= sec; return; }
+    if (phase === 'run') {
+      const lim = lenis.limit || (document.documentElement.scrollHeight - innerHeight);
+      if (lenis.scroll >= lim - 2) { phase = 'end'; wait = 3; return; }   // fim: segura um pouco no rodapé
+      lenis.scrollTo(Math.min(lim, lenis.scroll + pxs(speed) * sec), { immediate: true, force: true });
+    } else if (phase === 'end') {
+      phase = 'run'; wait = 2.5; window.__jumpTo ? window.__jumpTo(0) : lenis.scrollTo(0, { immediate: true, force: true });   // volta ao topo e recomeça
+    }
+  });
+}
+
+/* ---------------- Tooltips: dica ao deixar o mouse em cima ---------------- */
+{ const tip = $('.tip');
+  const T = {
+    pt: { store: 'Abrir a loja Let Me Be em nova aba', insta: 'Abrir o Instagram em nova aba', fyw: 'Abrir o site da Fyw em nova aba', ext: 'Abrir em nova aba',
+      sec: 'Ir para esta seção', jar: 'Arraste para girar o pote', cream: 'Clique e arraste para sentir o creme', avo: 'Passe o mouse para empurrar o abacate',
+      bottle: 'Arraste para girar o frasco', chip: 'Clique para saber mais', pt: 'Ver o site em português', en: 'See the site in English', top: 'Voltar ao topo',
+      a11y: 'Opções de acessibilidade', menu: 'Abrir o menu', faq: 'Ver a resposta', present: 'Rolar o site sozinho, ótimo para apresentar', pause: 'Pausar ou continuar', stop: 'Sair da apresentação',
+      dot: 'Ver este ingrediente', card: 'Passe o mouse para ver em destaque', close: 'Fechar', speed: 'Velocidade da rolagem' },
+    en: { store: 'Open the Let Me Be store in a new tab', insta: 'Open Instagram in a new tab', fyw: "Open Fyw's website in a new tab", ext: 'Open in a new tab',
+      sec: 'Go to this section', jar: 'Drag to spin the jar', cream: 'Click and drag to feel the cream', avo: 'Hover to push the avocado',
+      bottle: 'Drag to spin the bottle', chip: 'Click to learn more', pt: 'Ver o site em português', en: 'See the site in English', top: 'Back to top',
+      a11y: 'Accessibility options', menu: 'Open the menu', faq: 'See the answer', present: 'Auto-scroll the site, great for presenting', pause: 'Pause or resume', stop: 'Exit presentation',
+      dot: 'See this ingredient', card: 'Hover to highlight', close: 'Close', speed: 'Scroll speed' }
+  };
+  const L = () => (document.documentElement.lang === 'en' ? T.en : T.pt);
+  const textFor = (el) => {
+    const d = L();
+    if (el.dataset.tipK) return d[el.dataset.tipK];
+    if (el.matches('.lang button')) return el.textContent.trim().toLowerCase().startsWith('en') ? d.en : d.pt;
+    if (el.matches('.to-top')) return d.top;
+    if (el.matches('.a11y-btn')) return d.a11y;
+    if (el.matches('.burger')) return d.menu;
+    if (el.matches('.a11y-speed, .a11y-speed *')) return d.speed;
+    if (el.matches('.ing-feat__dots button')) return d.dot;
+    if (el.matches('.orbit .chip')) return d.chip;
+    if (el.matches('.ing-pop__x')) return d.close;
+    if (el.matches('.faq summary')) return d.faq;
+    if (el.matches('.card')) return d.card;
+    if (el.matches('.pro__canvas')) return d.bottle;
+    if (el.tagName === 'A') {
+      const href = el.getAttribute('href') || '';
+      if (href.startsWith('#')) return d.sec;
+      if (href.includes('letmebe.com.br')) return d.store;
+      if (href.includes('instagram.com')) return d.insta;
+      if (href.includes('fyw.com.br')) return d.fyw;
+      if (el.target === '_blank') return d.ext;
+    }
+    if (el.matches('.a11y-opt')) return el.querySelector('span') ? el.querySelector('span').textContent.trim() : '';
+    return el.getAttribute('aria-label') || '';
+  };
+  let cur = null, timer = 0, mx = 0, my = 0, txt = '';
+  const place = () => {
+    const w = tip.offsetWidth, h = tip.offsetHeight;
+    let x = mx + 16, y = my + 22; if (x + w > innerWidth - 10) x = mx - w - 12; if (y + h > innerHeight - 10) y = my - h - 14;
+    tip.style.transform = `translate(${x.toFixed(0)}px, ${y.toFixed(0)}px)`;
+  };
+  const hide = () => { clearTimeout(timer); tip.classList.remove('is-on'); cur = null; txt = ''; };
+  const showFor = (t) => { if (!t) { hide(); return; } if (t === txt && tip.classList.contains('is-on')) return; txt = t; clearTimeout(timer);
+    timer = setTimeout(() => { tip.textContent = t; tip.classList.add('is-on'); place(); }, tip.classList.contains('is-on') ? 0 : 450); };
+  const SEL = 'a, button, summary, .orbit .chip, .card, .pro__canvas, [data-tip-k]';
+  addEventListener('pointermove', (e) => {
+    if (e.pointerType !== 'mouse' || root.classList.contains('presenting')) { if (cur || txt) hide(); return; }
+    mx = e.clientX; my = e.clientY;
+    const el = e.target.closest ? e.target.closest(SEL) : null;
+    let t = el ? textFor(el) : '';
+    // objetos 3D (não são elementos da página): o palco avisa pelo cursor
+    if (!t) { const d = L(); if (root.classList.contains('over-cream')) t = d.cream; else if (root.classList.contains('over-avo')) t = d.avo; else if (root.classList.contains('over-jar')) t = d.jar; }
+    cur = el; showFor(t); if (tip.classList.contains('is-on')) place();
+  }, { passive: true });
+  addEventListener('pointerdown', hide); addEventListener('scroll', () => { if (tip.classList.contains('is-on')) hide(); }, { passive: true });
+  document.addEventListener('mouseleave', hide);
+}
