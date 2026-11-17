@@ -28,6 +28,8 @@ function applyLang(l) {
 applyLang(lang);
 
 /* ---------------- Scroll suave ---------------- */
+// celular: a barra do navegador aparece/some ao rolar; isso não pode recalcular as cenas presas (era o "pulo" no meio da rolagem)
+ScrollTrigger.config({ ignoreMobileResize: true });
 let lenis = null;
 if (!reduce && Lenis) {
   lenis = new Lenis({ lerp: 0.085, smoothWheel: true, syncTouch: false });
@@ -242,7 +244,7 @@ function buildScroll() {
   // 4 · Textura: abacates recolhem, pote vira o creme para a câmera
     .to(S, { sink: 1, duration: MOB ? 1.2 : 1.1, ease: 'power1.inOut' }, (MOB ? 4.75 : 5.3) + SH)   // os abacates seguem no sentido horário e mergulham no pote, um a um   // celular: os abacates voltam para o pote enquanto os cartões passam
     .to(root, { '--sky': '#DCDAD6', '--glow': 0.45, duration: 0.5 }, 5.5 + SH)
-    .to(S, { face: 1, x: 0, y: MOB ? 0.3 : -0.3, scale: 1.0, rotY: TAU, shadow: 0.1, duration: 0.9, ease: 'power2.inOut' }, 5.6 + SH)   // celular: pote um pouco mais alto, perto do título
+    .to(S, { face: 1, x: 0, y: MOB ? (innerHeight < 720 ? -0.15 : 0.3) : -0.3, scale: 1.0, rotY: TAU, shadow: 0.1, duration: 0.9, ease: 'power2.inOut' }, 5.6 + SH)   // celular: pote um pouco mais alto, perto do título
     .to(S, { face: 1, duration: 0.7 }, 6.5 + SH);
   // header claro sobre o fundo escuro
   // menu claro sempre que o que está atrás dele for escuro (Passo Único e rodapé)
@@ -429,7 +431,7 @@ function buildScroll() {
         });
       }); }
     // o trilho fica preso enquanto os cartões passam E enquanto o último (a loura) abre até a tela cheia
-    ScrollTrigger.create({ trigger: '.rail', start: 'top top', end: () => '+=' + (dist() + innerHeight * (WM_LEN + WM_HOLD)), pin: '.rail__pin', invalidateOnRefresh: true });
+    ScrollTrigger.create({ trigger: '.rail', start: 'top top', end: () => '+=' + (dist() + innerHeight * (WM_LEN + WM_HOLD)), pin: '.rail__pin', anticipatePin: 1, invalidateOnRefresh: true });
     trackST = gsap.to(track, { x: () => -dist(), ease: 'none', scrollTrigger: { trigger: '.rail', start: 'top top', end: () => '+=' + dist(), scrub: 1, invalidateOnRefresh: true } }).scrollTrigger;
     railDist = dist;
     $$('.card:not(.card--wm) .card__img img').forEach((img) => gsap.fromTo(img, { xPercent: -6 }, { xPercent: 6, ease: 'none', scrollTrigger: { trigger: '.rail', start: 'top top', end: () => '+=' + dist(), scrub: true } }));

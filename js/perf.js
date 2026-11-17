@@ -29,7 +29,7 @@ const minPR = () => (TIER === 0 ? 0.6 : 0.75);
 // opções do WebGLRenderer por nível
 export const rendererOpts = (canvas) => ({
   canvas, alpha: true,
-  antialias: TIER === 2 || (TIER === 1 && (devicePixelRatio || 1) < 1.5),
+  antialias: true,   // bordas sempre suaves (o visual não muda entre aparelhos)
   powerPreference: 'high-performance',
   stencil: false
 });
