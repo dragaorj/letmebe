@@ -28,7 +28,7 @@ export function createScene(canvas, { onProgress, onLoad } = {}) {
 
   // Estado animável
   const state = {
-    x: 0, y: -3.2, z: 0, rotY: -0.35, rotX: 0.04, rotZ: 0, scale: 1,
+    x: 0, y: -3.2, z: 0, rotY: -0.35, rotX: 0.04, rotZ: 0, scale: 1, zoom: 1, zoomY: 0,
     capLift: 0, capSpin: 0, capTilt: 0, burst: 0, shadow: 1, idle: 1
   };
 
@@ -134,7 +134,7 @@ export function createScene(canvas, { onProgress, onLoad } = {}) {
     grab.y += (e.clientX - grab.lx) * 0.011; grab.x = Math.max(-1.1, Math.min(1.1, grab.x + (e.clientY - grab.ly) * 0.008));
     grab.lx = e.clientX; grab.ly = e.clientY;
   });
-  const letGo = () => { grab.on = false; canvas.classList.remove('is-grab'); };
+  const letGo = () => { grab.on = false; canvas.classList.remove('is-grab'); grab.y = Math.atan2(Math.sin(grab.y), Math.cos(grab.y)); };   // volta pelo caminho mais curto
   canvas.addEventListener('pointerup', letGo); canvas.addEventListener('pointercancel', letGo);
 
   // ---------- Resize (pelo tamanho do próprio canvas) ----------
@@ -173,10 +173,12 @@ export function createScene(canvas, { onProgress, onLoad } = {}) {
     const t = clock.getElapsedTime();
     mouse.x += (mouse.tx - mouse.x) * 0.05; mouse.y += (mouse.ty - mouse.y) * 0.05;
     const sc = state.scale;
-    root.position.set(state.x, state.y + Math.sin(t * 1.1) * 0.04 * state.idle, state.z);
-    root.scale.setScalar(sc);
+    root.position.set(state.x, state.y + state.zoomY + Math.sin(t * 1.1) * 0.04 * state.idle, state.z);
+    root.scale.setScalar(sc * state.zoom);   // zoom: camada própria por cima do tamanho base
     if (!grab.on) { grab.x *= 0.9; grab.y *= 0.9; }
-    tilt.rotation.set(state.rotX + mouse.y * 0.04 + grab.x, state.rotY + mouse.x * 0.1 + grab.y, state.rotZ - mouse.x * 0.05);
+    // durante o zoom o mouse deixa de influenciar: o frasco chega exatamente de frente, logo centralizada
+    const calm = 1 - THREE.MathUtils.smoothstep(state.zoom, 1.1, 2), mx = mouse.x * calm, my = mouse.y * calm;
+    tilt.rotation.set((state.rotX + my * 0.04 + grab.x) * (0.3 + 0.7 * calm), state.rotY + mx * 0.1 + grab.y * calm, (state.rotZ - mx * 0.05) * calm);
     shadow.material.opacity = state.shadow;
 
     pMat.uniforms.uTime.value = t;

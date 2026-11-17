@@ -525,7 +525,7 @@ function buildScroll() {
   ScrollTrigger.matchMedia({ '(min-width: 0px)': () => {   // zoom no frasco também no celular
     const z = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.pro', start: 'bottom bottom', end: '+=80%', pin: true, pinSpacing: true, scrub: 0.6, invalidateOnRefresh: true } })
       .to('.pro__content', { autoAlpha: 0, duration: 0.25 }, 0)
-      .to(B, { scale: 9, y: -4.6, rotY: 0, duration: 1, ease: 'power2.in' }, 0)
+      .fromTo(B, { zoom: 1, zoomY: 0 }, { zoom: () => 9 / fitB().s, zoomY: () => -4.6 - fitB().y, duration: 1, ease: 'power2.in', immediateRender: false }, 0)
       .to('.pro__flash', { opacity: 1, duration: 0.22, ease: 'power1.in' }, 0.62)
       // a próxima parte nasce de dentro do branco, já no lugar
       .fromTo('.rail__pin', { autoAlpha: 0, scale: 0.84 }, { autoAlpha: 1, scale: 1, duration: 0.2, ease: 'power3.out' }, 0.8);
@@ -534,7 +534,11 @@ function buildScroll() {
     const m = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.pro', start: 'top bottom', end: () => z.scrollTrigger.end, scrub: 0.8, invalidateOnRefresh: true } })
       .fromTo('.pro__marquee p:first-child span', { xPercent: -95 }, { xPercent: 95 }, 0)
       .fromTo('.pro__marquee p:last-child span', { xPercent: 95 }, { xPercent: -95 }, 0);
-    return () => { z.scrollTrigger && z.scrollTrigger.kill(); m.scrollTrigger && m.scrollTrigger.kill(); };
+    // o frasco gira sem parar desde que a seção aparece, atravessa o zoom girando e termina exatamente de frente
+    // (Let Me Be à mostra) no instante em que entra na próxima seção
+    const rz = gsap.fromTo(B, { rotY: -Math.PI * 6 + 0.09 }, { rotY: 0.09, ease: 'power1.out', immediateRender: false,
+      scrollTrigger: { trigger: '.pro', start: 'top bottom', end: () => z.scrollTrigger.start + (z.scrollTrigger.end - z.scrollTrigger.start) * 0.6, scrub: 0.5, invalidateOnRefresh: true } });   // acaba de girar no meio do zoom: o resto da aproximação já é com a logo perfeitamente de frente
+    return () => { z.scrollTrigger && z.scrollTrigger.kill(); m.scrollTrigger && m.scrollTrigger.kill(); rz.scrollTrigger && rz.scrollTrigger.kill(); };
   } });
   gsap.from('.pro__copy > *, .pro__specs div', { y: 30, autoAlpha: 0, stagger: 0.08, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.pro__content', start: 'top 90%' } });
 

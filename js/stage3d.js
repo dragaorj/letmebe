@@ -130,7 +130,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
   const lidMat = new THREE.MeshPhysicalMaterial({ color: 0xbfa777, metalness: 1, roughness: 0.34, clearcoat: 0.4, clearcoatRoughness: 0.2, envMapIntensity: 0.95 });   // metal liso: sem mapa de relevo (os UVs da tampa geravam granulado)
   const linerMat = new THREE.MeshPhysicalMaterial({ color: 0xf4f2ec, roughness: 0.3, clearcoat: 0.5 });
   const creamBodyMat = new THREE.MeshPhysicalMaterial({ color: 0xf2efe6, roughness: 0.4 });
-  const creamMat = new THREE.MeshPhysicalMaterial({ color: 0xf7f3e8, roughness: 0.24, clearcoat: 0.8, clearcoatRoughness: 0.18, sheen: 0.5, sheenColor: new THREE.Color(0xfff4e0) });
+  const creamMat = new THREE.MeshPhysicalMaterial({ color: 0xe2d8bf, roughness: 0.34, clearcoat: 0.45, clearcoatRoughness: 0.26, sheen: 0.3, sheenColor: new THREE.Color(0xf3e6c8) });   // creme marfim um pouco mais escuro (dá para ver as dobras)
   // até 6 "toques" simultâneos no creme (cada um: posição + força + idade)
   const TOUCH = 6;
   const creamU = {
