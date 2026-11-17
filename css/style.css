@@ -1515,3 +1515,12 @@ html:has(.header.is-compact) .mnav__a11y{display:block}
   .hero__scroll .hero__mouse{display:none!important}
   .hero__scroll .hero__scrolltxt{position:static!important;transform:none!important;margin:0!important;font-size:9px!important}
 }
+
+/* computador: oval dos ingredientes (o JS posiciona cada item; o grupo não gira) */
+@media (min-width:901px){
+  .orbit{aspect-ratio:auto}
+  .orbit__list{transform:none!important}
+  .orbit .chip,.orbit .orbit__item .chip{transform:none!important}
+  .orbit__track circle{animation:orbitDots 24s linear infinite}
+  @keyframes orbitDots{to{stroke-dashoffset:-147.26}}
+}

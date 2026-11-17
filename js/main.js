@@ -335,12 +335,20 @@ function buildScroll() {
       orbitEl.style.width = D.toFixed(0) + 'px';
       // título menor, logo acima do pote
       ingTitle.style.setProperty('top', Math.max(84, j.y - innerWidth * 0.34 - ingTitle.offsetHeight).toFixed(0) + 'px', 'important');
-    } else { orbitEl.style.width = ''; ingTitle.style.removeProperty('top'); }
+    } else {
+      // computador: círculo maior em telas baixas (notebook), sem achatar
+      const vert = Math.min(j.y - 178, innerHeight - j.y - 46);
+      const rr = Math.max(170, Math.min(innerWidth * 0.31, Math.max(vert, innerHeight * 0.47), 430));
+      const rx = rr, ry = rr;
+      orbitEl.style.width = (2 * rx).toFixed(0) + 'px'; orbitEl.style.height = (2 * ry).toFixed(0) + 'px'; orbitEl.style.aspectRatio = '1';
+      // título dentro do oval, entre o topo do caminho e o pote
+      ingTitle.style.setProperty('top', Math.max(90, j.y - ry * 0.62 - ingTitle.offsetHeight / 2).toFixed(0) + 'px', 'important');
+    }
   });
   // círculo de ingredientes gira com o scroll
   // ingredientes orbitam o pote sem parar; pausam no hover ou com um item aberto
   const orbitList = $('.orbit__list'); let orbitRot = 0, orbitHold = false;
-  const orbitChips = $$('.orbit .chip'); let autoK = -1, autoT = 0, lastAuto = -1;
+  const orbitChips = $$('.orbit .chip'), orbitItems = $$('.orbit .orbit__item'); let autoK = -1, autoT = 0, lastAuto = -1;
   window.__orbitAutoReset = (k) => { autoK = -1; lastAuto = k === undefined ? -1 : k; };
   orbitList.addEventListener('pointerenter', () => (orbitHold = true));
   orbitList.addEventListener('pointerleave', () => (orbitHold = false));
@@ -363,6 +371,13 @@ function buildScroll() {
     }
     if (!orbitHold && !isOpen && !reduce) orbitRot = (orbitRot + dt * (innerWidth <= 900 ? 0.011 : 0.006)) % 360;   // no celular gira um pouco mais rápido: um ingrediente passa por baixo a cada ~8 s
     orbitList.style.setProperty('--rot', orbitRot.toFixed(2) + 'deg');
+    // computador: cada ingrediente anda sobre o oval (posição calculada; o grupo não gira mais como um disco)
+    if (innerWidth > 900) [-135, -45, 135, 45].forEach((base, k) => {
+      const a = (base + orbitRot) * Math.PI / 180, it = orbitItems[k];
+      it.style.left = (50 + Math.cos(a) * 50).toFixed(3) + '%'; it.style.top = (50 + Math.sin(a) * 50).toFixed(3) + '%';
+      const ib = it.getBoundingClientRect(), hb = header.getBoundingClientRect().bottom;
+      it.style.opacity = Math.max(0, Math.min(1, (ib.top - hb - 6) / 50)).toFixed(3);   // perto do menu, o ingrediente some suave
+    });
   });
   // janela do ingrediente: independente do "+", flutua do lado de dentro do círculo (em direção ao pote)
   // e sempre dentro da tela, abaixo do menu
