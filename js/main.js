@@ -59,7 +59,14 @@ if (!reduce && Lenis) {
   const swapTexts = (i) => (textTL = gsap.timeline())
     .to([tk, '.hero__meta', '.hero__side'], { y: -14, autoAlpha: 0, filter: 'blur(6px)', duration: 0.45, ease: 'power2.in', stagger: 0.05 })
     .add(() => fillSet(i))
-    .fromTo([tk, '.hero__meta', '.hero__side'], { y: 18, autoAlpha: 0, filter: 'blur(6px)' }, { y: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 0.9, ease: 'expo.out', stagger: 0.07 });
+    .fromTo([tk, '.hero__meta', '.hero__side'], { y: 18, autoAlpha: 0, filter: 'blur(6px)' }, { y: 0, autoAlpha: 1, filter: 'blur(0px)', duration: 0.9, ease: 'expo.out', stagger: 0.07 })
+    .add(() => countNum(), '<');   // o número conta do zero até o valor
+  // contador do número do topo (250 g · 3 ativos · 10 min)
+  const countNum = () => {
+    const end = parseInt(tn.textContent, 10) || 0, o = { v: 0 };
+    tn.textContent = '0';
+    return gsap.to(o, { v: end, duration: end > 50 ? 1.4 : 0.9, ease: 'power3.out', onUpdate: () => { tn.textContent = Math.round(o.v); } });
+  };
   let wordTL = null, textTL = null, splitsNow = [];
   // troca de idioma: para o que estiver animando e reescreve tudo no idioma novo, na hora
   window.__heroSet = () => {
@@ -165,6 +172,7 @@ document.fonts.ready.then(() => { ready.fonts = true; tryStart(); });
 setTimeout(() => { Object.keys(ready).forEach((k) => (ready[k] = true)); tryStart(); }, 10000);
 
 let started = false;
+let storyTL = null;   // linha do tempo do pote (usada para reaplicar a cena)
 function tryStart() {
   if (started || !ready.model || !ready.draw || !ready.fonts) return;
   started = true;
@@ -177,7 +185,8 @@ function tryStart() {
     .fromTo('.header > *', { y: -24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.08, duration: 0.9, ease: 'expo.out', clearProps: 'transform,opacity,visibility' }, '-=0.3')
     .from('.hero__w.is-on', { yPercent: 45, opacity: 0, filter: 'blur(10px)', duration: 1.6, ease: 'expo.out', clearProps: 'transform,opacity,filter' }, '<')
     .fromTo('.hero__foot > *', { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: 0.08, clearProps: 'transform,opacity,visibility' }, '<0.3')
-    .to(S, { y: innerWidth <= 760 ? (innerHeight < 720 ? 0.3 : 0.22) : -0.3, duration: 1.8, ease: 'expo.out', onComplete() { this.kill(); } }, '<')   // no celular o pote sobe um pouco
+    .to(S, { y: innerWidth <= 760 ? (innerHeight < 720 ? 0.3 : 0.22) : -0.3, duration: 1.8, ease: 'expo.out', onComplete() { this.kill(); },
+      onUpdate() { if (scrollY > 40 && storyTL) { this.kill(); const tm = storyTL.time(); storyTL.time(0); storyTL.time(tm); } } }, '<')   // se a página já começou rolada, a cena manda na altura do pote   // no celular o pote sobe um pouco
     // as folhas são as últimas a aparecer: entram deslizando pelos cantos (sem fade)
     .set('.hero__leaves', { autoAlpha: 1 }, '>-0.6')
     .fromTo('.leafg--tr', { x: () => innerWidth * 0.32, y: () => -innerHeight * 0.42 }, { x: 0, y: 0, duration: 1.8, ease: 'expo.out' }, '<')
@@ -230,9 +239,11 @@ function buildScroll() {
   const vh = () => innerHeight;
   const TAU = Math.PI * 2;
   // linha do tempo do pote, medida em "telas" ao longo de .story
-  const tl = gsap.timeline({ defaults: { ease: 'none' },
+  let storyLeft = false;
+  const tl = storyTL = gsap.timeline({ defaults: { ease: 'none' },
     scrollTrigger: { trigger: '.story', start: 'top top', end: 'bottom bottom', scrub: 1.1,
-      onLeave: () => stage.pause(), onEnterBack: () => stage.resume() } });
+      onLeave: () => { storyLeft = true; const tw = tl.scrollTrigger.getTween(); if (tw && tw.isActive()) tw.eventCallback('onComplete', () => { if (storyLeft) stage.pause(); }); else stage.pause(); },   // só pausa o 3D depois que a cena terminou de chegar ao fim (tampa fechada)
+      onEnterBack: () => { storyLeft = false; stage.resume(); } } });
   // folhas do hero: saem pelas bordas ao rolar e voltam ao subir
   gsap.timeline({ defaults: { ease: 'power2.in' }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 0.9, scrub: 0.8 } })
     .to('.leafg--tr', { xPercent: 150, yPercent: -150, rotate: 18 }, 0)   // saem deslizando pelo canto (sem fade) e voltam ao subir
@@ -240,6 +251,12 @@ function buildScroll() {
   // 1 · Hero: desenrosca a tampa, creme cresce, abacates explodem (pico)
   const PORTRAIT_FACE_Y = 0.62, LAND_FACE_Y = 0.05;   // computador: o pote encosta de leve nas letras do título   // telas em pé (monitor vertical): o creme sobe para perto do título
   const MOB = innerWidth <= 760, HERO_Y = MOB ? (innerHeight < 720 ? 0.3 : 0.22) : -0.3, SH = 2.6;   // SH: duração extra do manifesto
+  const ING_Y = innerWidth <= 760 ? 0.05 : 0.25;   // altura do pote nos ingredientes
+  const FACE_Y = MOB ? (innerHeight < 720 ? -0.15 : 0.07) : (innerWidth / innerHeight < 0.85 ? PORTRAIT_FACE_Y : LAND_FACE_Y);   // altura do pote na cena da textura
+  // pote fechado no fim da textura: centralizado no eixo da câmera (que mira a altura 1.3), um pouco acima do centro.
+  // O cálculo vale para qualquer tamanho de tela; em telas baixas o pote fica menor para caber o botão embaixo.
+  const CLOSE_S = innerWidth / innerHeight < 0.85 ? 0.88 : (innerHeight < 820 ? 0.8 : 0.9), CLOSE_EFF = CLOSE_S * (innerWidth / innerHeight < 0.85 ? 0.8 : 1);
+  const CLOSE_Y = 1.3 + 0.1 - 0.7 * CLOSE_EFF;
   // trava a posição do hero dentro da própria linha do tempo (ao voltar ao topo o pote volta ao lugar certo)
   tl.fromTo(S, { y: HERO_Y, x: 0 }, { y: HERO_Y, x: 0, duration: 1, immediateRender: false }, 0)
     .to(S, { spin: 0, duration: 0.15 }, 0)
@@ -252,17 +269,20 @@ function buildScroll() {
   // 2 · Manifesto: pote ao centro, órbita larga, um giro completo
     .fromTo(S, { y: HERO_Y }, { immediateRender: false, x: 0, y: MOB ? -1.25 : 0, scale: 0.88, orbit: 1.25, duration: 0.8, ease: 'power2.inOut' }, 1.0)   // celular: pote na metade de baixo, texto em cima
     .to(S, { rotY: 0.08 + TAU, duration: 1.4 + SH, ease: 'power1.inOut' }, 1.0)   // volta completa para a direita: chega aos ingredientes com a logo de frente
-    .to(S, { lidAway: 1, duration: 0.6, ease: 'power2.in' }, 1.0)
+    .to(S, { lidAway: 1, duration: 0.75, ease: 'power1.in' }, 0.55)   // emenda com o desenroscar: a tampa sobe e some sem parar
     .to(root, { '--sky': '#ECECEA', duration: 0.6 }, 1.0)
   // 3 · Ingredientes: céu verde profundo, abacates formam o arco
     .to(root, { '--sky': '#D1D5BB', '--glow': 0.6, duration: 0.5 }, 3.1 + SH)
-    .to(S, { gather: 1, scale: innerWidth <= 760 ? 1 : 0.86, y: innerWidth <= 760 ? 0.05 : 0.25, shadow: 0, orbit: 1, duration: 1.5, ease: 'power1.inOut' }, 2.7 + SH)
+    .fromTo(S, { y: MOB ? -1.25 : 0 }, { immediateRender: false, gather: 1, scale: innerWidth <= 760 ? 1 : 0.86, y: ING_Y, shadow: 0, orbit: 1, duration: 1.5, ease: 'power1.inOut' }, 2.7 + SH)
     .to(S, { rotY: 0.08 + TAU, duration: 2.2 }, 3.1 + SH)
   // 4 · Textura: abacates recolhem, pote vira o creme para a câmera
     .to(S, { sink: 1, duration: MOB ? 1.2 : 1.1, ease: 'power1.inOut' }, (MOB ? 4.75 : 5.3) + SH)   // os abacates seguem no sentido horário e mergulham no pote, um a um   // celular: os abacates voltam para o pote enquanto os cartões passam
     .to(root, { '--sky': '#DCDAD6', '--glow': 0.45, duration: 0.5 }, 5.5 + SH)
-    .to(S, { face: 1, x: 0, y: MOB ? (innerHeight < 720 ? -0.15 : 0.3) : (innerWidth / innerHeight < 0.85 ? PORTRAIT_FACE_Y : LAND_FACE_Y), scale: 1.0, rotY: TAU, shadow: 0.1, duration: 0.9, ease: 'power2.inOut' }, 5.6 + SH)   // celular: pote um pouco mais alto, perto do título
-    .to(S, { face: 1, duration: 0.7 }, 6.5 + SH);
+    .fromTo(S, { y: ING_Y }, { immediateRender: false, face: 1, x: 0, y: FACE_Y, scale: 1.0, rotY: TAU, shadow: 0.1, duration: 0.9, ease: 'power2.inOut' }, 5.6 + SH)   // celular: pote um pouco mais alto, perto do título
+    .to(S, { face: 1, duration: 0.7 }, 6.5 + SH)
+    .fromTo(S, { lidBack: 0 }, { lidBack: 1, duration: 0.45, ease: 'power1.inOut', immediateRender: false }, 7.15 + SH)
+    .fromTo(S, { x: 0, y: FACE_Y, scale: 1.0 }, { x: 0, scale: CLOSE_S, y: CLOSE_Y, duration: 0.4, ease: 'power2.inOut', immediateRender: false }, 7.15 + SH)   // o pote sobe um pouco e fica no centro da tela enquanto a tampa fecha   // a tampa volta e fecha o pote antes da próxima seção
+    .to(S, { lidBack: 1, duration: 0.45 }, 7.7 + SH);   // pausa com o pote fechado e o botão "Obter agora" antes da próxima seção
   // header claro sobre o fundo escuro
   // menu claro sempre que o que está atrás dele for escuro (Passo Único e rodapé)
   { const darks = [$('.pro'), $('.close__card')]; gsap.ticker.add(() => { const y = 40; header.classList.toggle('on-dark', darks.some((el) => { const r = el.getBoundingClientRect(); return r.top <= y && r.bottom >= y; })); }); }
@@ -271,6 +291,7 @@ function buildScroll() {
   gsap.from('.orbit__ring circle', { scale: 0.6, autoAlpha: 0, transformOrigin: '50% 50%', stagger: 0.12, duration: 1.6, ease: 'expo.out', scrollTrigger: { trigger: '.ingredients', start: 'top 30%' } });
   // (os itens aparecem junto com o círculo, pela opacidade do conjunto; sem animação própria que podia deixá-los invisíveis)
   // o texto circular acompanha o creme (centro, raio e perspectiva)
+  const texCta = $('.tex-cta'), ease01 = (v) => { v = Math.max(0, Math.min(1, (v - 0.5) / 0.5)); return v * v * (3 - 2 * v); };
   const ringEl = $('.texture__ring'), texTitle = $('.texture__title'), ingTitle = $('.ingredients__title'), orbitBox = $('.orbit');
   // título da textura: as palavras sobem de trás de uma máscara (e descem ao sair da cena)
   let texShown = false, texSplit = null;
@@ -296,8 +317,26 @@ function buildScroll() {
     // a dica (texto + seta) some enquanto mexe no creme e volta 2 s depois de soltar
     const now = performance.now(); const busy = stage.interacting; if (busy) lastKneadT = now;
     hintA += ((now - lastKneadT > 1200 ? 1 : 0) - hintA) * (busy ? 0.25 : 0.06);   // some ao interagir; volta depois que o pote se acomoda
-    ringEl.style.opacity = k * hintA;
-    if ((k > 0.5) !== texShown) texReveal(k > 0.5);
+    ringEl.style.opacity = k * hintA * clamp(1 - S.lidBack * 4);
+    // botão "Obter agora": sempre logo abaixo do pote, nunca por cima dele (sem espaço, ele some)
+    { let on = S.lidBack > 0.97 && S.face > 0.9;
+      const r = S.face > 0.9 && S.lidBack > 0.5 ? stage.jarRect() : null, bh = texCta.offsetHeight || 60, gap = 26;
+      // pote + botão centralizados juntos no espaço livre (abaixo do menu), em qualquer tela
+      let want = 0;
+      if (r) {
+        const hb = (header.getBoundingClientRect().bottom || 70) + 10, free = innerHeight - hb;
+        const groupH = (r.bottom - r.top) + gap + bh, dst = hb + Math.max(0, (free - groupH) / 2);
+        want = (S.yAdj + (r.top - dst) / Math.max(1, r.pxPerUnit)) * ease01(S.lidBack);
+      }
+      S.yAdj += (want - S.yAdj) * 0.12;
+      if (on) {
+        const top = r.bottom + gap;
+        on = top + bh <= innerHeight - 12;
+        if (on) texCta.style.top = top.toFixed(1) + 'px';
+      }
+      if (on !== texCta.classList.contains('is-on')) { texCta.classList.toggle('is-on', on); texCta.setAttribute('aria-hidden', String(!on)); texCta.tabIndex = on ? 0 : -1; } }
+    const texWant = k > 0.5 && S.lidBack < 0.04;   // quando a tampa começa a voltar, o título sai (animação reversa)
+    if (texWant !== texShown) texReveal(texWant);
     if (innerWidth <= 760) {   // celular: o título fica parado junto com o pote (não sobe sozinho quando a cena termina)
       const sr = texTitle.parentElement.getBoundingClientRect(), off = Math.max(0, -sr.top);
       texTitle.style.translate = off ? '0 ' + off.toFixed(1) + 'px' : '';

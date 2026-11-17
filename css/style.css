@@ -1524,3 +1524,80 @@ html:has(.header.is-compact) .mnav__a11y{display:block}
   .orbit__track circle{animation:orbitDots 24s linear infinite}
   @keyframes orbitDots{to{stroke-dashoffset:-147.26}}
 }
+/* convite para rolar: some no primeiro scroll e só volta no topo da página */
+.past-hero .hero__scroll,.is-loading .hero__scroll{opacity:0!important;visibility:hidden;transition:opacity .5s var(--ease),visibility 0s .5s}
+
+/* textura: espaço extra no fim para a tampa voltar e fechar o pote */
+.texture{min-height:265vh}
+
+/* detalhes em oliva dourado (cor do manual: #BFA777) */
+.prow__n svg{fill:var(--ouro)}
+.prow:hover .prow__n svg{fill:#E2CFA6}
+.hero__meta b{color:var(--verde)}
+.orbit .chip__plus{color:var(--ouro);box-shadow:inset 0 0 0 1px rgba(191,167,119,.7)}
+.ing-pop__s{color:#9C8657}
+.texture__ring text{fill:var(--ouro)}
+
+/* voltar ao topo: anel de progresso e contorno em oliva dourado */
+.to-top__ring{stroke:var(--ouro)}
+.to-top{box-shadow:0 0 0 1.5px rgba(191,167,119,.85),0 14px 30px -14px rgba(0,60,50,.55)}
+
+/* ===== detalhes em oliva dourado (#BFA777 do manual; texto pequeno em tom mais escuro para leitura) ===== */
+:root{--ouro-ink:#8F7A4E}
+/* linha do tempo da Essência: datas, bolinhas e halo */
+.ess-route__k{color:var(--ouro-ink)}
+.ess-route li::before{box-shadow:inset 0 0 0 1.5px var(--ouro)}
+.ess-route li.on::before{box-shadow:0 0 0 6px rgba(191,167,119,.3)}
+/* FAQ: numeração */
+.faq summary::before{color:var(--ouro-ink)}
+/* assinatura da citação */
+.ess-quote::after{color:var(--ouro-ink)}
+/* ingredientes: legenda pequena */
+.orbit .chip small{color:var(--ouro-ink)}
+
+/* selo do hero em oliva dourado */
+.hero__cta .tag{background:var(--ouro);color:#2B2414}
+
+/* ===== Passo Único: toques de oliva dourado (mesma estrutura, mais vida) ===== */
+/* brilho quente dourado na base, somado ao brilho menta que já existe atrás do frasco */
+.pro::after{background:radial-gradient(38% 52% at 50% 100%,rgba(191,167,119,.2),transparent 70%),radial-gradient(40% 60% at 50% 100%,rgba(167,222,212,.1),transparent 70%),linear-gradient(180deg,transparent,rgba(0,0,0,.35))!important}
+/* letreiro "Passo Único" de fundo: contorno levemente dourado */
+.pro__marquee .pro__word path{stroke:rgba(191,167,119,.2)!important}
+/* chamada acima do texto */
+.pro__kick{margin:0;display:flex;align-items:center;gap:12px;font-family:var(--f-label);font-style:italic;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--ouro)}
+.pro__kick svg{width:13px;height:13px;fill:var(--ouro);flex:none}
+.pro__kick::after{content:"";width:46px;height:1px;background:linear-gradient(90deg,var(--ouro),transparent)}
+/* especificações: rótulos e linhas em dourado */
+.pro__specs{border-top:1px solid rgba(191,167,119,.55)!important}
+.pro__specs div{border-bottom:1px solid rgba(191,167,119,.22)!important;transition:border-color .4s}
+.pro__specs div:last-child{border-bottom-color:rgba(191,167,119,.55)!important}
+.pro__specs dt{color:var(--ouro)!important}
+.pro__specs dd{color:#F8F5F1}
+.pro__specs div:hover{border-bottom-color:rgba(191,167,119,.6)!important}
+/* botão: seta em oliva dourado */
+.pro .btn--light .arrow{background:var(--ouro);color:#2B2414}
+.pro .btn--light:hover .arrow{background:#F8F5F1;color:var(--verde)}
+
+/* crédito: Fyw em oliva dourado */
+.close__credit b{color:var(--ouro)!important}
+
+/* textura: botão "Obter agora" abaixo do pote fechado */
+.tex-cta{position:fixed;left:50%;top:auto;bottom:auto;z-index:4;opacity:0;visibility:hidden;pointer-events:none;
+  transform:translate(-50%,24px);transition:opacity .5s var(--ease),transform .7s var(--ease),visibility 0s .5s}
+.tex-cta.is-on{opacity:1;visibility:visible;pointer-events:auto;transform:translate(-50%,0);transition:opacity .6s var(--ease),transform .8s var(--ease),visibility 0s}
+.tex-cta .arrow{background:var(--ouro);color:#2B2414}
+
+/* ===== botões do menu: sempre a mesma altura (idioma, acessibilidade, menu e "Comprar") ===== */
+:root{--hbtn:42px}
+.header:not(.is-compact) .lang{height:var(--hbtn)!important;padding:0 8px!important;box-sizing:border-box}
+.header:not(.is-compact) .a11y-btn{width:var(--hbtn)!important;height:var(--hbtn)!important}
+.header .burger,.header.is-compact .burger{width:var(--hbtn);height:var(--hbtn)}
+.header.is-compact .header__cta{height:var(--hbtn);box-sizing:border-box}
+.header .burger i{left:13px;right:13px}
+
+/* celular: frases do manifesto maiores (aproveitar a largura) */
+@media (max-width:760px){.manifesto__line:not(.manifesto__line--title){font-size:clamp(32px,10.8vw,52px)!important;letter-spacing:-.025em!important}}
+@media (max-width:760px){.manifesto__line--title{font-size:clamp(36px,12vw,56px)!important}}
+@media (max-width:760px){.ingredients__title{font-size:clamp(28px,8.8vw,40px)!important;line-height:1.08!important}}
+@media (max-width:760px) and (min-height:721px){.texture__title{top:25.5svh!important}}   /* título + pote centralizados juntos no celular */
+.header:not(.is-compact) .header__nav{height:var(--hbtn);box-sizing:border-box;align-items:center}

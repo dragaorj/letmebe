@@ -68,7 +68,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
   const state = {
     x: 0, y: -2.8, z: 0, scale: 0.9, rotY: 0.08, face: 0,   // rotY 0.08 = logo Let Me Be centralizada, de frente
      // face: 0 = de lado, 1 = creme de frente para a câmera
-    spin: 1, open: 0, lidAway: 0, cream: 0, burst: 0, orbit: 1, gather: 0, sink: 0, float: 0, shadow: 0.16, visible: 1, offsetX: 0.95
+    spin: 1, open: 0, lidAway: 0, lidBack: 0, yAdj: 0, cream: 0, burst: 0, orbit: 1, gather: 0, sink: 0, float: 0, shadow: 0.16, visible: 1, offsetX: 0.95
   };
 
   const jarRoot = new THREE.Group(); scene.add(jarRoot);
@@ -127,7 +127,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
         'float gT = smoothstep(-0.05, 1.3, vY); material.transmission = transmission * mix(1.0, 0.1, gT * gT * (3.0 - 2.0 * gT));'));
   };
   // tampa em alumínio anodizado verde Let Me Be (metálico, verniz brilhante, leve escovado)
-  const lidMat = new THREE.MeshPhysicalMaterial({ color: 0x0e6e5d, metalness: 1, roughness: 0.36, clearcoat: 0.4, clearcoatRoughness: 0.2, envMapIntensity: 0.95, normalMap: frost.normal, normalScale: new THREE.Vector2(0.05, 0.05) });
+  const lidMat = new THREE.MeshPhysicalMaterial({ color: 0xbfa777, metalness: 1, roughness: 0.34, clearcoat: 0.4, clearcoatRoughness: 0.2, envMapIntensity: 0.95 });   // metal liso: sem mapa de relevo (os UVs da tampa geravam granulado)
   const linerMat = new THREE.MeshPhysicalMaterial({ color: 0xf4f2ec, roughness: 0.3, clearcoat: 0.5 });
   const creamBodyMat = new THREE.MeshPhysicalMaterial({ color: 0xf2efe6, roughness: 0.4 });
   const creamMat = new THREE.MeshPhysicalMaterial({ color: 0xf7f3e8, roughness: 0.24, clearcoat: 0.8, clearcoatRoughness: 0.18, sheen: 0.5, sheenColor: new THREE.Color(0xfff4e0) });
@@ -275,12 +275,12 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
     document.documentElement.classList.toggle('over-avo', hovered >= 0);
     const over = state.visible > 0.5 && jarModel && hit([jarModel]);
     document.documentElement.classList.toggle('over-jar', !!over);
-    document.documentElement.classList.toggle('over-cream', !!(over && cream && state.open > 0.6 && hit([cream])));
+    document.documentElement.classList.toggle('over-cream', !!(over && cream && state.open > 0.6 && state.lidBack < 0.5 && hit([cream])));
   }, { passive: true });
   addEventListener('pointerdown', (e) => {
     if (!jarModel || state.visible < 0.5) return;
     toNDC(e);
-    if (cream && state.open > 0.6) {
+    if (cream && state.open > 0.6 && state.lidBack < 0.5) {   // com a tampa fechada, clicar no pote gira o pote (não mexe no creme)
       const h = hit([cream]);
       if (h) {
         if (e.pointerType === 'touch') {   // celular: segure o dedo ~0,25 s para começar a mexer
@@ -332,7 +332,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
     camera.lookAt(0, 1.0 + f * 0.3, 0);
 
     const ox = mobile ? 0 : state.x;
-    jarRoot.position.set(ox, state.y + Math.sin(t * 1.2) * 0.035 * state.float, state.z);
+    jarRoot.position.set(ox, state.y + state.yAdj + Math.sin(t * 1.2) * 0.035 * state.float, state.z);
     ground.position.set(ox, state.y + 0.002, state.z);   // o chão acompanha a base do pote: sombra de contato real
     jarRoot.scale.setScalar(state.scale * (mobile ? 0.8 + 0.08 * (1 - state.open) : 1));   // no celular o pote do hero aparece maior
     jarRoot.visible = state.visible > 0.01;
@@ -344,18 +344,37 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
 
     // creme: balanço + envelhecimento dos toques
     const dv = tilt.clone().sub(tiltPrev); tiltPrev.copy(tilt);
-    creamU.uSlosh.value.lerp(new THREE.Vector2(dv.y * 45, -dv.x * 45), 0.2).multiplyScalar(0.9);
+    creamU.uSlosh.value.set(0, 0);
     creamU.uT.value.forEach((v) => { v.w += dt; });
     creamU.uTime.value = t;
 
     if (lid) {
       const o = state.open, lift = sstep(0.15, 1, o);
-      lid.rotation.set(lift * 0.55, -sstep(0, 0.55, o) * Math.PI * 1.5, lift * -0.25);
       const aw = ease(state.lidAway);
+      // desenroscar: a tampa gira (2 voltas) com um leve balanço de rosca, e depois sai girando e virando no ar
+      const sp = sstep(0, 0.55, o), spin = sp * Math.PI * 4, wob = Math.sin(sp * Math.PI) * 0.07;
+      lid.rotation.set(lift * 0.55 + wob * Math.cos(spin) + aw * 2.4, -spin - lift * 1.2 - aw * 3, lift * -0.25 + wob * Math.sin(spin) - aw * 1.1);
       lid.position.set(lift * 0.6 + aw * 1.2, lidBase + sstep(0.05, 0.4, o) * 0.14 + lift * 1.7 + aw * (mobile ? 7 : 3.2) + Math.sin(t * 1.4) * 0.03 * lift, -lift * 0.4 - aw * 2);
-      lid.visible = f < 0.6 && aw < 0.97;
+      // fim da textura: a tampa surge por trás do pote, sobe com folga, avança por cima da boca e desce reta enroscando
+      // (o trajeto nunca cruza o pote: cada eixo anda numa janela própria, e ela só avança depois de estar acima da borda)
+      const kb = state.lidBack;
+      if (kb > 0.001) {
+        const ss = (a, b) => ease(sstep(a, b, kb));
+        const back = ss(0, 0.28) * (1 - ss(0.5, 0.78));            // vai para trás do pote e depois volta para o centro
+        const up = ss(0.12, 0.52);                                    // sobe por trás até bem acima da borda
+        const down = ss(0.74, 0.95);                                  // já centralizada, desce reta até encaixar
+        const ks = sstep(0.72, 1, kb);                                // enroscar no final
+        const HI = lidBase + 1.15, LO = lidBase - 2.4;
+        lid.position.set(
+          0.35 * back,
+          LO + (HI - LO) * up - (HI - lidBase) * down + (1 - ks) * 0.12 * down,
+          -2.3 * back);
+        const tiltK = 1 - ss(0.55, 0.85);                             // inclinação some antes de chegar sobre a boca
+        lid.rotation.set(-0.45 * tiltK, -(1 - ks) * Math.PI * 2, 0.2 * tiltK);
+      }
+      lid.visible = (f < 0.6 && aw < 0.97) || kb > 0.001;
     }
-    if (cream) cream.scale.set(1, 0.55 + 0.45 * ease(state.cream), 1);
+    if (cream) cream.scale.set(1, 1, 1);   // o creme fica sempre na mesma altura (não sobe quando a tampa sai)
 
     // abacates: saem da boca do pote → anel inclinado que gira → coroa frontal (ingredientes)
     const b = state.burst, g = ease(state.gather), sc = state.scale * (mobile ? 0.95 : 1);
@@ -475,8 +494,24 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
     return toPx(jarRoot.localToWorld(_j.set(0, 0.68, 0)));
   }
 
+  // ponto mais baixo do pote (com a tampa) na tela: contorno do cilindro projetado
+  const _b = new THREE.Vector3();
+  function jarRect() {
+    if (!jarModel) return null;
+    jarModel.updateWorldMatrix(true, false);
+    let minY = 1e9, maxY = -1e9;
+    for (let i = 0; i < 16; i++) {
+      const a = i / 16 * Math.PI * 2, x = Math.cos(a) * 1.02, z = Math.sin(a) * 1.02;
+      for (const y of [0, 1.52]) { const p = toPx(jarModel.localToWorld(_b.set(x, y, z))); minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y); }
+    }
+    // quantos pixels a tela anda por unidade de altura do pote (para centralizar por pixel)
+    const w0 = jarRoot.getWorldPosition(new THREE.Vector3()), o = toPx(w0.clone()), u = toPx(w0.clone().add(_b.set(0, 1, 0)));
+    return { top: minY, bottom: maxY, pxPerUnit: Math.abs(o.y - u.y) };
+  }
+  const jarBottom = () => { const r = jarRect(); return r && r.bottom; };
+
   return {
-    state, creamScreen, jarScreen,
+    state, creamScreen, jarScreen, jarBottom, jarRect,
     pause() { running = false; },
     resume() { pieces.forEach((p) => { p.off.set(0, 0, 0); p.vel.set(0, 0, 0); p.rot.set(0, 0, 0); p.rvel.set(0, 0, 0); }); if (!running) { running = true; clock.getDelta(); quality.reset(); requestAnimationFrame(frame); } },
     resetSpin() { idleRot = 0; userRot = 0; spinV = 0; },
