@@ -4,10 +4,11 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { studioEnvironment } from './studio.js';
+import { rendererOpts, autoScale } from './perf.js';
 
 export function createScene(canvas, { onProgress, onLoad } = {}) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  const renderer = new THREE.WebGLRenderer(rendererOpts(canvas));
+  const quality = autoScale(renderer);
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 0.92;
@@ -166,6 +167,7 @@ export function createScene(canvas, { onProgress, onLoad } = {}) {
   }
   function frame() {
     if (!running) return;
+    quality.tick();
     const t = clock.getElapsedTime();
     mouse.x += (mouse.tx - mouse.x) * 0.05; mouse.y += (mouse.ty - mouse.y) * 0.05;
     const sc = state.scale;

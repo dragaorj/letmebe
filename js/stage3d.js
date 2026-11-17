@@ -5,6 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+import { TIER, rendererOpts, autoScale } from './perf.js';
 
 const DRACO = 'https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/gltf/';
 const ease = (t) => 1 - Math.pow(1 - t, 3);
@@ -13,11 +14,12 @@ const sstep = (a, b, x) => { const t = clamp01((x - a) / (b - a)); return t * t 
 const lerp = (a, b, t) => a + (b - a) * t;
 
 export function createStage(canvas, { onProgress, onLoad } = {}) {
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true, powerPreference: 'high-performance' });
-  renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  const renderer = new THREE.WebGLRenderer(rendererOpts(canvas));
+  const quality = autoScale(renderer);   // resolução se ajusta sozinha para manter a fluidez
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1.0;
+  // sombra suave igual em todos; em aparelhos modestos o mapa é menor com o desfoque proporcional (mesmo resultado)
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.VSMShadowMap;
 
@@ -49,7 +51,9 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
 
   const key = new THREE.DirectionalLight(0xfffaf0, 2.5);
   key.position.set(-3.5, 7, 4.5); key.castShadow = true;
-  key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 22; key.shadow.blurSamples = 32; key.shadow.bias = -0.0005;
+  if (TIER === 2) { key.shadow.mapSize.set(2048, 2048); key.shadow.radius = 22; key.shadow.blurSamples = 32; }
+  else { key.shadow.mapSize.set(1024, 1024); key.shadow.radius = 11; key.shadow.blurSamples = 16; }
+  key.shadow.bias = -0.0005;
   Object.assign(key.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 1, far: 24 });
   scene.add(key);
   const rim = new THREE.DirectionalLight(0xd8fff4, 2.4); rim.position.set(4, 3.5, -4); scene.add(rim);
@@ -103,6 +107,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
 
   // Vidro fosco em degradê: verde Let Me Be profundo no alto → menta translúcido embaixo
   const glass = new THREE.MeshPhysicalMaterial({
+    // vidro com refração igual em todos os aparelhos (o visual do pote não muda)
     color: 0xffffff, transmission: 1, roughness: 0.5, thickness: 1.2, ior: 1.47,
     attenuationColor: new THREE.Color(0x0f6f60), attenuationDistance: 1.1,
     clearcoat: 0.45, clearcoatRoughness: 0.38, specularIntensity: 0.8,
@@ -230,7 +235,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
   let lastSY = window.scrollY, scrollVel = 0, orbitPhase = 0, selfSpin = 0, crownRef = 0;
   const qS = new THREE.Quaternion(), Y_AXIS = new THREE.Vector3(0, 1, 0);
   const ray = new THREE.Raycaster();
-  const toNDC = (e) => ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  const toNDC = (e) => ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / (canvas.clientHeight || innerHeight)) * 2 + 1);
   function hit(objs) { ray.setFromCamera(ndc, camera); return ray.intersectObjects(objs, true)[0]; }
   function press(point, force) {
     const l = cream.worldToLocal(point.clone());
@@ -289,7 +294,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
   /* ---------- Resize ---------- */
   let mobile = false;
   function resize() {
-    const w = innerWidth, h = innerHeight;
+    const w = innerWidth, h = canvas.clientHeight || innerHeight;   // altura visível de verdade (sem a barra do navegador do celular)
     renderer.setSize(w, h, false); camera.aspect = w / h; mobile = w / h < 0.85;
     camera.updateProjectionMatrix();
   }
@@ -300,6 +305,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
   const tilt = new THREE.Vector2(), tiltPrev = new THREE.Vector2(), v3 = new THREE.Vector3(), zero = new THREE.Vector2();
   function frame() {
     if (!running) return;
+    quality.tick();
     const dt = Math.min(clock.getDelta(), 0.05), t = clock.elapsedTime;
     if (!dragging) {
       userRot += spinV; spinV *= 0.94;
@@ -315,7 +321,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
 
     // câmera: aproxima e sobe conforme "face" (mergulho no creme)
     const f = ease(state.face);
-    const camZ = (mobile ? 12.2 : 10.4) - f * (mobile ? 3.4 : 4.2);   // no celular o creme aproxima menos (o título continua visível)
+    const camZ = (mobile ? 12.2 : 10.4) - f * (mobile ? 3.4 : 3.85);   // no celular o creme aproxima menos (o título continua visível)
     camera.position.set(0, 1.7 + f * 1.4, camZ);
     camera.lookAt(0, 1.0 + f * 0.3, 0);
 
@@ -441,7 +447,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
 
   // posição do creme na tela (para o texto circular acompanhar o creme perfeitamente)
   const _c = new THREE.Vector3(), _e1 = new THREE.Vector3(), _e2 = new THREE.Vector3();
-  const toPx = (v) => { v.project(camera); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * innerHeight }; };
+  const toPx = (v) => { v.project(camera); return { x: (v.x + 1) / 2 * innerWidth, y: (1 - v.y) / 2 * (canvas.clientHeight || innerHeight) }; };
   function creamScreen() {
     if (!cream) return null;
     cream.updateWorldMatrix(true, false);
@@ -462,7 +468,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
   return {
     state, creamScreen, jarScreen,
     pause() { running = false; },
-    resume() { if (!running) { running = true; clock.getDelta(); requestAnimationFrame(frame); } },
+    resume() { if (!running) { running = true; clock.getDelta(); quality.reset(); requestAnimationFrame(frame); } },
     resetSpin() { idleRot = 0; userRot = 0; spinV = 0; },
     get mobile() { return mobile; },
     get kneading() { return kneading; },

@@ -168,7 +168,7 @@ function tryStart() {
     .fromTo('.header > *', { y: -24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, stagger: 0.08, duration: 0.9, ease: 'expo.out', clearProps: 'transform,opacity,visibility' }, '-=0.3')
     .from('.hero__w.is-on', { yPercent: 45, opacity: 0, filter: 'blur(10px)', duration: 1.6, ease: 'expo.out', clearProps: 'transform,opacity,filter' }, '<')
     .fromTo('.hero__foot > *', { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: 0.08, clearProps: 'transform,opacity,visibility' }, '<0.3')
-    .to(S, { y: innerWidth <= 760 ? 0.22 : -0.3, duration: 1.8, ease: 'expo.out', onComplete() { this.kill(); } }, '<')   // no celular o pote sobe um pouco
+    .to(S, { y: innerWidth <= 760 ? (innerHeight < 720 ? 0.3 : 0.22) : -0.3, duration: 1.8, ease: 'expo.out', onComplete() { this.kill(); } }, '<')   // no celular o pote sobe um pouco
     .fromTo('.hero__leaves', { autoAlpha: 0, y: -24 }, { autoAlpha: 1, y: 0, duration: 1.6, ease: 'expo.out' }, '>-0.6');   // as folhas são as últimas a aparecer
   buildScroll();
 }
@@ -220,7 +220,7 @@ function buildScroll() {
     .to('.leafg--tr', { xPercent: 70, yPercent: -80, rotate: 25, autoAlpha: 0 }, 0)
     .to('.leafg--l', { xPercent: -90, yPercent: 20, rotate: -20, autoAlpha: 0 }, 0);
   // 1 · Hero: desenrosca a tampa, creme cresce, abacates explodem (pico)
-  const MOB = innerWidth <= 760, HERO_Y = MOB ? 0.22 : -0.3, SH = 2.6;   // SH: duração extra do manifesto
+  const MOB = innerWidth <= 760, HERO_Y = MOB ? (innerHeight < 720 ? 0.3 : 0.22) : -0.3, SH = 2.6;   // SH: duração extra do manifesto
   // trava a posição do hero dentro da própria linha do tempo (ao voltar ao topo o pote volta ao lugar certo)
   tl.fromTo(S, { y: HERO_Y, x: 0 }, { y: HERO_Y, x: 0, duration: 1, immediateRender: false }, 0)
     .to(S, { spin: 0, duration: 0.15 }, 0)
@@ -242,7 +242,7 @@ function buildScroll() {
   // 4 · Textura: abacates recolhem, pote vira o creme para a câmera
     .to(S, { sink: 1, duration: MOB ? 1.2 : 1.1, ease: 'power1.inOut' }, (MOB ? 4.75 : 5.3) + SH)   // os abacates seguem no sentido horário e mergulham no pote, um a um   // celular: os abacates voltam para o pote enquanto os cartões passam
     .to(root, { '--sky': '#DCDAD6', '--glow': 0.45, duration: 0.5 }, 5.5 + SH)
-    .to(S, { face: 1, x: 0, y: MOB ? 0.3 : 0, scale: 1.0, rotY: TAU, shadow: 0.1, duration: 0.9, ease: 'power2.inOut' }, 5.6 + SH)   // celular: pote um pouco mais alto, perto do título
+    .to(S, { face: 1, x: 0, y: MOB ? 0.3 : -0.3, scale: 1.0, rotY: TAU, shadow: 0.1, duration: 0.9, ease: 'power2.inOut' }, 5.6 + SH)   // celular: pote um pouco mais alto, perto do título
     .to(S, { face: 1, duration: 0.7 }, 6.5 + SH);
   // header claro sobre o fundo escuro
   // menu claro sempre que o que está atrás dele for escuro (Passo Único e rodapé)
@@ -312,7 +312,7 @@ function buildScroll() {
   orbitList.addEventListener('pointerenter', () => (orbitHold = true));
   orbitList.addEventListener('pointerleave', () => (orbitHold = false));
   gsap.ticker.add((t, dt) => {
-    if (innerWidth <= 900) return;
+    if (innerWidth <= 900 || S.gather < 0.02 || S.sink > 0.99) return;   // só gira enquanto os ingredientes estão na tela
     const isOpen = orbitList.querySelector('.chip[aria-expanded="true"]');
     if (!orbitHold && !isOpen && !reduce) orbitRot = (orbitRot + dt * 0.006) % 360;
     orbitList.style.setProperty('--rot', orbitRot.toFixed(2) + 'deg');
@@ -401,13 +401,16 @@ function buildScroll() {
       c0.classList.add('is-open'); const wo = c0.offsetWidth; c0.classList.remove('is-open');
       cs.forEach((c, k) => { c.classList.toggle('is-open', was[k]); c.style.transition = prev[k]; });
       const gap = parseFloat(getComputedStyle(track).columnGap) || 0;
+      track.style.setProperty('padding-left', Math.max(16, innerWidth / 2 - wo / 2).toFixed(1) + 'px', 'important');   // o primeiro cartão (Cachos) começa no centro, sem nada à esquerda
       return Math.max(0, c0.offsetLeft + (n - 1) * (wc + gap) + wo / 2 - innerWidth / 2);
     };
     gsap.fromTo('.rail__ghost span', { xPercent: 0 }, { xPercent: -40, ease: 'none', scrollTrigger: { trigger: '.rail', start: 'top bottom', end: () => '+=' + (dist() + innerHeight * 2), scrub: 1.2, invalidateOnRefresh: true } });
     // carrossel em arco: cada cartão gira em perspectiva conforme a posição na tela; a velocidade abre o espaçamento
     { const cards = $$('.card'); let vs = 0, hov = null, act = null;
       cards.forEach((c) => { c.addEventListener('pointerenter', () => (hov = c)); c.addEventListener('pointerleave', () => { if (hov === c) hov = null; }); });
+      const railSec = $('.rail');
       gsap.ticker.add(() => {
+        { const rr = railSec.getBoundingClientRect(); if (rr.bottom < -50 || rr.top > innerHeight + 50) return; }   // fora da tela: não calcula nada
         // a foto sob o mouse (ou a do meio da tela) se expande
         let best = hov, bd = 1e9;
         const atEnd = trackST && trackST.progress > 0.96;   // fim do trilho: a loura é sempre a do destaque
