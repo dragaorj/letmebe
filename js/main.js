@@ -210,7 +210,13 @@ function buildText() {
       el.innerHTML = el.innerHTML.replace(/ ([^ ]+)\s*$/, ' $1');   // nunca deixa a última palavra sozinha na linha
       const m = SplitText.create(el, { type: 'lines,words', linesClass: 'ml', wordsClass: 'w', aria: el.tagName === 'P' ? 'none' : 'auto' }); splits.push(m);
       const fromR = el.classList.contains('manifesto__line--r');
-      textST.push(gsap.fromTo(m.words, { yPercent: 115, rotate: fromR ? -4 : 4, xPercent: fromR ? 12 : -12 }, { yPercent: 0, rotate: 0, xPercent: 0, stagger: 0.06, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 92%', end: 'center 62%', scrub: 0.8 } }).scrollTrigger);
+      // surgimento: as palavras sobem de trás da máscara, girando de leve; a parte verde acende por último
+      const ems = el.querySelectorAll('em');
+      const tlm = gsap.timeline({ scrollTrigger: { trigger: el, start: 'top 82%', toggleActions: 'play none none reverse' } })
+        .fromTo(m.words, { yPercent: 120, rotate: fromR ? -6 : 6, xPercent: fromR ? 8 : -8, opacity: 0 },
+          { yPercent: 0, rotate: 0, xPercent: 0, opacity: 1, duration: 1.35, ease: 'expo.out', stagger: 0.07 })
+        .fromTo(ems, { color: '#404040' }, { color: '#008575', duration: 1, ease: 'power2.out', clearProps: 'color' }, '-=0.8');
+      textST.push(tlm.scrollTrigger);
       textST.push(gsap.fromTo(el, { opacity: 1 }, { opacity: 0, ease: 'none', scrollTrigger: { trigger: el, start: 'center 38%', end: 'bottom 5%', scrub: true } }).scrollTrigger);
       return;
     }

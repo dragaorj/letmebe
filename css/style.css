@@ -1474,3 +1474,6 @@ html:has(.header.is-compact) .mnav__a11y{display:block}
 .pro__marquee span{display:inline-block}
 .pro__marquee .pro__word--a{height:.7em!important;margin-top:.12em!important}
 .pro__marquee .pro__word--b{height:.86em!important;margin-top:.12em!important}
+
+/* manifesto: cada frase sempre em duas linhas (a segunda em verde) */
+@media (min-width:761px){.manifesto__line:not(.manifesto__line--title){white-space:nowrap}}
