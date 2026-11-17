@@ -1464,3 +1464,13 @@ html:has(.header.is-compact) .mnav__a11y{display:block}
 .header .lang button[aria-pressed="true"]{pointer-events:none;cursor:default}
 /* Passo Único: contorno das palavras de fundo mais apagado */
 .pro__marquee p{-webkit-text-stroke:1.2px rgba(167,222,212,.14)!important}
+
+/* Passo Único: as palavras de fundo agora são o lettering oficial (SVG), só no contorno e apagado */
+.pro__marquee .pro__word{display:block;width:auto;overflow:visible}
+.pro__marquee .pro__word path{fill:none;stroke:rgba(167,222,212,.16);stroke-width:1.2px;vector-effect:non-scaling-stroke}
+.pro__marquee .pro__word--a{height:.74em;margin-top:.16em}
+.pro__marquee .pro__word--b{height:.92em;margin-top:0}
+.pro__marquee p{-webkit-text-stroke:0!important}
+.pro__marquee span{display:inline-block}
+.pro__marquee .pro__word--a{height:.7em!important;margin-top:.12em!important}
+.pro__marquee .pro__word--b{height:.86em!important;margin-top:.12em!important}
