@@ -223,7 +223,11 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
       });
       obj.visible = false; avoGroup.add(obj);
     }
-    onLoad && onLoad();
+    // compila os shaders antes de liberar a página (sem travar a tela onde o navegador permite)
+    const hidden = []; scene.traverse((o) => { if (o.isMesh && !o.visible) { hidden.push(o); o.visible = true; } });
+    pieces.forEach((p) => { if (!p.obj.visible) { hidden.push(p.obj); p.obj.visible = true; } });
+    const done = () => { hidden.forEach((o) => (o.visible = false)); onLoad && onLoad(); };
+    (renderer.compileAsync ? renderer.compileAsync(scene, camera) : Promise.resolve()).then(done, done);
   });
 
   /* ---------- Interação (eventos na janela; o canvas não bloqueia a página) ---------- */
@@ -354,7 +358,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
     // abacates: saem da boca do pote → anel inclinado que gira → coroa frontal (ingredientes)
     const b = state.burst, g = ease(state.gather), sc = state.scale * (mobile ? 0.95 : 1);
     const mouth = new THREE.Vector3(ox, state.y + 1.32 * sc, 0);
-    const R = (mobile ? 1.65 : 2.35) * state.orbit, Rg = mobile ? 1.4 : 2.7, RY = mobile ? 1.0 : 0.82;   // celular: coroa mais alta, abacates mais longe do pote
+    const R = (mobile ? 1.65 : 2.35) * state.orbit, Rg = mobile ? 1.62 : 2.7, RY = mobile ? 1.12 : 0.82;   // celular: coroa mais alta, abacates mais longe do pote
     const P0 = new THREE.Vector3(), P1 = new THREE.Vector3(), P2 = new THREE.Vector3(), qT = new THREE.Quaternion(), qF = new THREE.Quaternion();
     // os abacates respondem à rolagem: rolar rápido = giram rápido; parado = giro lento
     const sy = window.scrollY, dy = sy - lastSY; lastSY = sy;

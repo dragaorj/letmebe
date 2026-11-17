@@ -6,15 +6,46 @@
 <title>Let Me Be · Liberdade para ser</title>
 <meta name="description" content="Let Me Be: cosméticos capilares brasileiros desde 2015. Beleza é cuidado, tecnologia e liberdade para ser quem você é.">
 <meta name="theme-color" content="#E6ECDF">
+<link rel="canonical" href="https://letmebe.vercel.app/">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Let Me Be">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:locale:alternate" content="en_US">
+<meta property="og:title" content="Let Me Be · Liberdade para ser">
+<meta property="og:description" content="Cosméticos capilares brasileiros desde 2015. Nova máscara de abacate: nutrição, brilho e liberdade para ser quem você é.">
+<meta property="og:url" content="https://letmebe.vercel.app/">
+<meta property="og:image" content="https://letmebe.vercel.app/assets/img/campanha-mascara.webp">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Let Me Be · Liberdade para ser">
+<meta name="twitter:description" content="Cosméticos capilares brasileiros desde 2015. Nova máscara de abacate.">
+<meta name="twitter:image" content="https://letmebe.vercel.app/assets/img/campanha-mascara.webp">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"Organization","@id":"https://letmebe.vercel.app/#org","name":"Let Me Be","url":"https://letmebe.vercel.app/","logo":"https://letmebe.vercel.app/assets/brand/favicon.svg",
+  "foundingDate":"2015","foundingLocation":{"@type":"Place","name":"Marília, São Paulo, Brasil"},
+  "email":"sac@letmebe.com.br","sameAs":["https://www.instagram.com/letmebecosmetic/","https://www.linkedin.com/company/let-me-be-oficial/","https://www.letmebe.com.br/"]},
+ {"@type":"WebSite","@id":"https://letmebe.vercel.app/#site","url":"https://letmebe.vercel.app/","name":"Let Me Be","inLanguage":["pt-BR","en"],"publisher":{"@id":"https://letmebe.vercel.app/#org"}},
+ {"@type":"Product","name":"Máscara Capilar Nutritiva com Óleo de Abacate","brand":{"@id":"https://letmebe.vercel.app/#org"},
+  "description":"Máscara capilar nutritiva com óleo de abacate: nutrição intensa, brilho e toque sedoso.","image":"https://letmebe.vercel.app/assets/img/campanha-mascara.webp",
+  "url":"https://www.letmebe.com.br/collections/mascara"}
+]}
+</script>
+<script>/* preferências de acessibilidade salvas: aplicadas antes de desenhar a página */
+try{var a=JSON.parse(localStorage.getItem('lmb-a11y')||'{}');for(var k in a){if(a[k])document.documentElement.classList.add('a11y-'+k)}}catch(e){}</script>
 <link rel="icon" type="image/svg+xml" href="assets/brand/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&display=swap" rel="stylesheet">
-<link rel="preload" href="assets/fonts/PlayfairDisplay.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;1,400;1,500;1,600&display=swap"></noscript>
+<link rel="preload" href="assets/fonts/PlayfairDisplay.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/PlayfairDisplay-Italic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="css/style.css">
 <link rel="preload" href="assets/3d/jar.glb" as="fetch" crossorigin>
 </head>
 <body class="is-loading">
+<a class="skip-link" href="#top" data-i18n="a11y.skip">Pular para o conteúdo</a>
 
 <div class="loader" aria-hidden="true">
   <svg class="loader__logo" viewBox="0 0 747 845">{{LOGO_V}}</svg>
@@ -39,6 +70,18 @@
       <button type="button" data-lang="pt" aria-pressed="true">PT</button>
       <button type="button" data-lang="en" aria-pressed="false">EN</button>
     </div>
+    <div class="a11y">
+      <button class="a11y-btn" type="button" aria-expanded="false" aria-controls="a11y-panel" aria-label="Acessibilidade" data-i18n-aria="a11y.title"><svg viewBox="0 0 512 512" aria-hidden="true" class="ic-a11y"><path d="M256,112a56,56,0,1,1,56-56A56.06,56.06,0,0,1,256,112Z"/><path d="M432,112.8l-.45.12h0l-.42.13c-1,.28-2,.58-3,.89-18.61,5.46-108.93,30.92-172.56,30.92-59.13,0-141.28-22-167.56-29.47a73.79,73.79,0,0,0-8-2.58c-19-5-32,14.3-32,31.94,0,17.47,15.7,25.79,31.55,31.76v.28l95.22,29.74c9.73,3.73,12.33,7.54,13.6,10.84,4.13,10.59.83,31.56-.34,38.88l-5.8,45L150.05,477.44q-.15.72-.27,1.47l-.23,1.27h0c-2.32,16.15,9.54,31.82,32,31.82,19.6,0,28.25-13.53,32-31.94h0s28-157.57,42-157.57,42.84,157.57,42.84,157.57h0c3.75,18.41,12.4,31.94,32,31.94,22.52,0,34.38-15.74,32-31.94-.21-1.38-.46-2.74-.76-4.06L329,301.27l-5.79-45c-4.19-26.21-.82-34.87.32-36.9a1.09,1.09,0,0,0,.08-.15c1.08-2,6-6.48,17.48-10.79l89.28-31.21a16.9,16.9,0,0,0,1.62-.52c16-6,32-14.3,32-31.93S451,107.81,432,112.8Z"/></svg></button>
+      <div class="a11y-panel" id="a11y-panel" role="dialog" aria-labelledby="a11y-title">
+      <p class="a11y-panel__title" id="a11y-title"><svg viewBox="0 0 512 512" aria-hidden="true" class="ic-a11y"><path d="M256,112a56,56,0,1,1,56-56A56.06,56.06,0,0,1,256,112Z"/><path d="M432,112.8l-.45.12h0l-.42.13c-1,.28-2,.58-3,.89-18.61,5.46-108.93,30.92-172.56,30.92-59.13,0-141.28-22-167.56-29.47a73.79,73.79,0,0,0-8-2.58c-19-5-32,14.3-32,31.94,0,17.47,15.7,25.79,31.55,31.76v.28l95.22,29.74c9.73,3.73,12.33,7.54,13.6,10.84,4.13,10.59.83,31.56-.34,38.88l-5.8,45L150.05,477.44q-.15.72-.27,1.47l-.23,1.27h0c-2.32,16.15,9.54,31.82,32,31.82,19.6,0,28.25-13.53,32-31.94h0s28-157.57,42-157.57,42.84,157.57,42.84,157.57h0c3.75,18.41,12.4,31.94,32,31.94,22.52,0,34.38-15.74,32-31.94-.21-1.38-.46-2.74-.76-4.06L329,301.27l-5.79-45c-4.19-26.21-.82-34.87.32-36.9a1.09,1.09,0,0,0,.08-.15c1.08-2,6-6.48,17.48-10.79l89.28-31.21a16.9,16.9,0,0,0,1.62-.52c16-6,32-14.3,32-31.93S451,107.81,432,112.8Z"/></svg><span data-i18n="a11y.title">Acessibilidade</span></p>
+      <div class="a11y-opts">
+      <button type="button" class="a11y-opt" data-a11y="text" aria-pressed="false"><b aria-hidden="true">A+</b><span data-i18n="a11y.text">Texto maior</span></button>
+      <button type="button" class="a11y-opt" data-a11y="contrast" aria-pressed="false"><b aria-hidden="true">◐</b><span data-i18n="a11y.contrast">Alto contraste</span></button>
+      <button type="button" class="a11y-opt" data-a11y="motion" aria-pressed="false"><b aria-hidden="true">❚❚</b><span data-i18n="a11y.motion">Menos movimento</span></button>
+      <button type="button" class="a11y-opt" data-a11y="links" aria-pressed="false"><b aria-hidden="true">U̲</b><span data-i18n="a11y.links">Destacar links</span></button>
+      </div>
+      </div>
+    </div>
     <a class="btn btn--dark btn--sm header__cta" href="https://www.letmebe.com.br/collections/mascara" target="_blank" rel="noopener" tabindex="-1"><span data-i18n="hero.cta">Comprar na loja</span><i class="arrow" aria-hidden="true"><svg class="ic-arr" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg></i></a>
     <button class="burger" type="button" aria-expanded="false" aria-controls="mnav" data-i18n-aria="nav.open" aria-label="Abrir menu"><i></i><i></i></button>
   </div>
@@ -53,6 +96,15 @@
     <a href="#essencia"><span data-i18n="nav.story">Essência</span></a>
     <a href="#duvidas"><span data-i18n="nav.faq">FAQ</span></a>
   </nav>
+  <section class="mnav__a11y" aria-label="Acessibilidade" data-i18n-aria="a11y.title">
+    <p class="mnav__a11y-title"><svg viewBox="0 0 512 512" aria-hidden="true" class="ic-a11y"><path d="M256,112a56,56,0,1,1,56-56A56.06,56.06,0,0,1,256,112Z"/><path d="M432,112.8l-.45.12h0l-.42.13c-1,.28-2,.58-3,.89-18.61,5.46-108.93,30.92-172.56,30.92-59.13,0-141.28-22-167.56-29.47a73.79,73.79,0,0,0-8-2.58c-19-5-32,14.3-32,31.94,0,17.47,15.7,25.79,31.55,31.76v.28l95.22,29.74c9.73,3.73,12.33,7.54,13.6,10.84,4.13,10.59.83,31.56-.34,38.88l-5.8,45L150.05,477.44q-.15.72-.27,1.47l-.23,1.27h0c-2.32,16.15,9.54,31.82,32,31.82,19.6,0,28.25-13.53,32-31.94h0s28-157.57,42-157.57,42.84,157.57,42.84,157.57h0c3.75,18.41,12.4,31.94,32,31.94,22.52,0,34.38-15.74,32-31.94-.21-1.38-.46-2.74-.76-4.06L329,301.27l-5.79-45c-4.19-26.21-.82-34.87.32-36.9a1.09,1.09,0,0,0,.08-.15c1.08-2,6-6.48,17.48-10.79l89.28-31.21a16.9,16.9,0,0,0,1.62-.52c16-6,32-14.3,32-31.93S451,107.81,432,112.8Z"/></svg><span data-i18n="a11y.title">Acessibilidade</span></p>
+    <div class="a11y-opts">
+      <button type="button" class="a11y-opt" data-a11y="text" aria-pressed="false"><b aria-hidden="true">A+</b><span data-i18n="a11y.text">Texto maior</span></button>
+      <button type="button" class="a11y-opt" data-a11y="contrast" aria-pressed="false"><b aria-hidden="true">◐</b><span data-i18n="a11y.contrast">Alto contraste</span></button>
+      <button type="button" class="a11y-opt" data-a11y="motion" aria-pressed="false"><b aria-hidden="true">❚❚</b><span data-i18n="a11y.motion">Menos movimento</span></button>
+      <button type="button" class="a11y-opt" data-a11y="links" aria-pressed="false"><b aria-hidden="true">U̲</b><span data-i18n="a11y.links">Destacar links</span></button>
+      </div>
+  </section>
   <div class="mnav__foot">
     <a class="btn btn--light btn--lg" href="https://www.letmebe.com.br/" target="_blank" rel="noopener"><span data-i18n="nav.store">Loja oficial</span><i class="arrow" aria-hidden="true"><svg class="ic-arr" viewBox="0 0 24 24"><path d="M7 17 17 7M8.5 7H17v8.5"/></svg></i></a>
     <p class="mnav__note">@letmebecosmetic</p>
@@ -80,7 +132,7 @@
     <section class="act hero" aria-labelledby="hero-title">
       <div class="hero__frame">
         <div class="hero__leaves" aria-hidden="true">
-          <div class="leafg leafg--tr"><img class="leaf leaf--a" src="assets/img/folha.webp" alt=""><img class="leaf leaf--b" src="assets/img/folha.webp" alt=""></div>
+          <div class="leafg leafg--tr"><img class="leaf leaf--a" src="assets/img/folha.webp" alt="" fetchpriority="high" width="640" height="640"><img class="leaf leaf--b" src="assets/img/folha.webp" alt=""></div>
           <div class="leafg leafg--l"><img class="leaf leaf--a" src="assets/img/folha-esq.webp" alt=""><img class="leaf leaf--b" src="assets/img/folha-esq.webp" alt=""></div>
         </div>
         <h1 id="hero-title" class="hero__title" data-i18n-aria="hero.aria" aria-label="Abacate, nutrição e brilho"><span class="hero__w is-on" data-i18n="hero.w1">Abacate</span><span class="hero__w" data-i18n="hero.w2">Nutrição</span><span class="hero__w" data-i18n="hero.w3">Brilho</span></h1>
@@ -311,17 +363,17 @@
   <svg viewBox="0 0 48 48" aria-hidden="true"><circle class="to-top__track" cx="24" cy="24" r="21"/><circle class="to-top__ring" cx="24" cy="24" r="21"/><path d="M24 31V17m-6 6 6-6 6 6"/></svg>
 </button>
 
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/SplitText.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.20/dist/lenis.min.js"></script>
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
   "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
 } }
 </script>
-<script src="js/i18n.js"></script>
+<script defer src="js/i18n.js"></script>
 <script type="module" src="js/main.js"></script>
 </body>
 </html>

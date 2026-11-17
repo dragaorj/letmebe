@@ -1,6 +1,6 @@
 /* Textos PT / EN — Let Me Be (sem travessões no texto visível) */
 window.LMB_I18N = {
-  pt: {
+  pt: { "a11y.title": "Acessibilidade", "a11y.text": "Texto maior", "a11y.contrast": "Alto contraste", "a11y.motion": "Menos movimento", "a11y.links": "Destacar links", "a11y.skip": "Pular para o conteúdo",
     "nav.ing": "Ingredientes", "nav.faq": "FAQ", "nav.contact": "Contato",
     "ess.rt": "De Marília <em>para o mundo.</em>",
     "ess.r1k": "2015",
@@ -58,7 +58,7 @@ window.LMB_I18N = {
     "faq.q4": "Como funciona o cashback?", "faq.a4": "Todas as compras na loja oficial geram cashback para usar nas próximas compras.",
     "faq.q5": "Sou profissional. Posso revender?", "faq.a5": "Sim. Conheça o programa de distribuidores em letmebecosmetic.com."
   },
-  en: {
+  en: { "a11y.title": "Accessibility", "a11y.text": "Larger text", "a11y.contrast": "High contrast", "a11y.motion": "Reduce motion", "a11y.links": "Highlight links", "a11y.skip": "Skip to content",
     "nav.ing": "Ingredients", "nav.faq": "FAQ", "nav.contact": "Contact",
     "ess.rt": "From Marília <em>to the world.</em>",
     "ess.r1k": "2015",

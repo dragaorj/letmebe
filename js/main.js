@@ -6,7 +6,7 @@ const { gsap, ScrollTrigger, SplitText, Lenis } = window;
 gsap.registerPlugin(ScrollTrigger, SplitText);
 if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
 window.scrollTo(0, 0);
-const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.classList.contains('a11y-motion');
 const $ = (s, c = document) => c.querySelector(s);
 const $$ = (s, c = document) => [...c.querySelectorAll(s)];
 const root = document.documentElement;
@@ -74,7 +74,7 @@ if (!reduce && Lenis) {
     if (scrollY > innerHeight * 0.6 || document.hidden) return;   // só anima com o hero em tela
     const a = ws[cur], b = ws[(cur + 1) % ws.length]; cur = (cur + 1) % ws.length; swapTexts(cur);
     const L = document.documentElement.lang === 'en' ? 'en' : 'pt'; [a, b].forEach((w) => (w.textContent = DICT[L][w.dataset.i18n]));   // sempre no idioma atual
-    const sa = SplitText.create(a, { type: 'chars', charsClass: 'c' }), sb = SplitText.create(b, { type: 'chars', charsClass: 'c' }); splitsNow = [sa, sb];
+    const sa = SplitText.create(a, { type: 'chars', charsClass: 'c', aria: 'none' }), sb = SplitText.create(b, { type: 'chars', charsClass: 'c', aria: 'none' }); splitsNow = [sa, sb];
     b.classList.add('is-on');
     wordTL = gsap.timeline({ onComplete: () => { sa.revert(); sb.revert(); splitsNow = []; a.classList.remove('is-on'); wordTL = null; } })
       .to(sa.chars, { yPercent: -70, rotateX: 70, autoAlpha: 0, filter: 'blur(8px)', stagger: 0.035, duration: 0.7, ease: 'power3.in' }, 0)
@@ -96,7 +96,7 @@ if (!reduce && Lenis) {
 function measureHeader() {
   const h = header, lang = h.querySelector('.lang'), cta = h.querySelector('.header__cta'), bg = h.querySelector('.burger');
   const ctaW = cta ? cta.scrollWidth + 18 : 0, pad = 26 + 9 + 10, gaps = 40 + 16 * 2;
-  const w = pad + 118 + gaps + (lang ? lang.offsetWidth : 0) + ctaW + (bg ? 42 : 0);
+  const w = pad + 118 + gaps + (lang ? lang.offsetWidth : 0) + ctaW + (bg ? 42 : 0);   // no menu compacto o ícone de acessibilidade fica dentro do hambúrguer
   h.style.setProperty('--hw-compact', Math.min(innerWidth - 32, Math.round(w)) + 'px');
 }
 addEventListener('resize', measureHeader); document.fonts && document.fonts.ready.then(measureHeader); setTimeout(measureHeader, 300);
@@ -171,7 +171,10 @@ function tryStart() {
     .from('.hero__w.is-on', { yPercent: 45, opacity: 0, filter: 'blur(10px)', duration: 1.6, ease: 'expo.out', clearProps: 'transform,opacity,filter' }, '<')
     .fromTo('.hero__foot > *', { y: 24, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 1, ease: 'expo.out', stagger: 0.08, clearProps: 'transform,opacity,visibility' }, '<0.3')
     .to(S, { y: innerWidth <= 760 ? (innerHeight < 720 ? 0.3 : 0.22) : -0.3, duration: 1.8, ease: 'expo.out', onComplete() { this.kill(); } }, '<')   // no celular o pote sobe um pouco
-    .fromTo('.hero__leaves', { autoAlpha: 0, y: -24 }, { autoAlpha: 1, y: 0, duration: 1.6, ease: 'expo.out' }, '>-0.6');   // as folhas são as últimas a aparecer
+    // as folhas são as últimas a aparecer: entram deslizando pelos cantos (sem fade)
+    .set('.hero__leaves', { autoAlpha: 1 }, '>-0.6')
+    .fromTo('.leafg--tr', { x: () => innerWidth * 0.32, y: () => -innerHeight * 0.42 }, { x: 0, y: 0, duration: 1.8, ease: 'expo.out' }, '<')
+    .fromTo('.leafg--l', { x: () => -innerWidth * 0.32, y: () => innerHeight * 0.42 }, { x: 0, y: 0, duration: 1.8, ease: 'expo.out' }, '<0.12');
   buildScroll();
 }
 
@@ -190,7 +193,7 @@ function buildText() {
   });
   if (started) $$('.hero .split').forEach((el) => { el.dataset.shown = 1; gsap.set(el._lines, { yPercent: 0 }); });
   $$('.reveal-words').forEach((el) => {
-    const s = SplitText.create(el, { type: 'words', wordsClass: 'w' }); splits.push(s);
+    const s = SplitText.create(el, { type: 'words', wordsClass: 'w', aria: el.tagName === 'P' ? 'none' : 'auto' }); splits.push(s);
     const big = el.classList.contains('manifesto__line');
     if (big) {
       // oclusão: as palavras sobem de trás da máscara de cada linha, vindo do lado da frase
@@ -198,13 +201,13 @@ function buildText() {
       // quebras de linha próprias para cada tela: .d só no computador, .m só no celular
       el.querySelectorAll(innerWidth <= 760 ? 'br.d' : 'br.m').forEach((b) => b.remove());
       el.innerHTML = el.innerHTML.replace(/ ([^ ]+)\s*$/, ' $1');   // nunca deixa a última palavra sozinha na linha
-      const m = SplitText.create(el, { type: 'lines,words', linesClass: 'ml', wordsClass: 'w' }); splits.push(m);
+      const m = SplitText.create(el, { type: 'lines,words', linesClass: 'ml', wordsClass: 'w', aria: el.tagName === 'P' ? 'none' : 'auto' }); splits.push(m);
       const fromR = el.classList.contains('manifesto__line--r');
       textST.push(gsap.fromTo(m.words, { yPercent: 115, rotate: fromR ? -4 : 4, xPercent: fromR ? 12 : -12 }, { yPercent: 0, rotate: 0, xPercent: 0, stagger: 0.06, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 92%', end: 'center 62%', scrub: 0.8 } }).scrollTrigger);
       textST.push(gsap.fromTo(el, { opacity: 1 }, { opacity: 0, ease: 'none', scrollTrigger: { trigger: el, start: 'center 38%', end: 'bottom 5%', scrub: true } }).scrollTrigger);
       return;
     }
-    const tw = gsap.fromTo(s.words, { opacity: 0.18 }, { opacity: 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: el, start: 'top 75%', end: 'bottom 40%', scrub: true } });
+    const tw = gsap.fromTo(s.words, { '--wo': 0.18 }, { '--wo': 1, stagger: 0.1, ease: 'none', scrollTrigger: { trigger: el, start: 'top 75%', end: 'bottom 40%', scrub: true } });
     textST.push(tw.scrollTrigger);
   });
 }
@@ -219,8 +222,8 @@ function buildScroll() {
       onLeave: () => stage.pause(), onEnterBack: () => stage.resume() } });
   // folhas do hero: saem pelas bordas ao rolar e voltam ao subir
   gsap.timeline({ defaults: { ease: 'power2.in' }, scrollTrigger: { trigger: '.hero', start: 'top top', end: () => '+=' + innerHeight * 0.9, scrub: 0.8 } })
-    .to('.leafg--tr', { xPercent: 70, yPercent: -80, rotate: 25, autoAlpha: 0 }, 0)
-    .to('.leafg--l', { xPercent: -90, yPercent: 20, rotate: -20, autoAlpha: 0 }, 0);
+    .to('.leafg--tr', { xPercent: 150, yPercent: -150, rotate: 18 }, 0)   // saem deslizando pelo canto (sem fade) e voltam ao subir
+    .to('.leafg--l', { xPercent: -150, yPercent: 150, rotate: -18 }, 0);
   // 1 · Hero: desenrosca a tampa, creme cresce, abacates explodem (pico)
   const MOB = innerWidth <= 760, HERO_Y = MOB ? (innerHeight < 720 ? 0.3 : 0.22) : -0.3, SH = 2.6;   // SH: duração extra do manifesto
   // trava a posição do hero dentro da própria linha do tempo (ao voltar ao topo o pote volta ao lugar certo)
@@ -288,13 +291,7 @@ function buildScroll() {
     }
     const g = clamp(S.gather * 1.5) * (1 - clamp(S.sink * 2.2));   // some quando os abacates começam a mergulhar no pote
     ingTitle.style.opacity = g; ingTitle.style.visibility = g < 0.002 ? 'hidden' : 'visible';
-    if (innerWidth <= 900) {   // celular: os cartões entram e saem deslizando por baixo (sem ficar translúcidos)
-      const k2 = g * g * (3 - 2 * g);
-      // entram pela direita e saem pela esquerda; nunca sobem junto com a página
-      const dir = S.sink > 0.001 ? -1 : 1;
-      orbitBox.style.opacity = 1; orbitBox.style.visibility = k2 < 0.002 ? 'hidden' : 'visible';
-      orbitBox.style.translate = (dir * (1 - k2) * 110).toFixed(1) + 'vw 0';
-    } else { orbitBox.style.opacity = g; orbitBox.style.translate = ''; }
+    orbitBox.style.opacity = g; orbitBox.style.visibility = g < 0.002 ? 'hidden' : 'visible';
     if (S.face < 0.05) return;
     const c = stage.creamScreen(); if (!c) return;
     const w = c.rx * 1.8;   // texto rente à borda interna do creme
@@ -304,21 +301,50 @@ function buildScroll() {
   // anéis e ingredientes centralizados exatamente no pote
   const orbitEl = $('.orbit');
   gsap.ticker.add(() => {
-    if (!orbitEl || innerWidth <= 900 || S.gather < 0.02) return;
+    if (!orbitEl || S.gather < 0.02) return;
     const j = stage.jarScreen();
     orbitEl.style.left = j.x + 'px'; orbitEl.style.top = j.y + 'px';
+    if (innerWidth <= 900) {
+      // celular: o círculo vai do alto da tela (logo abaixo do menu) até perto do rodapé da tela, cortado nas laterais
+      const H = stage.screenH ? stage.screenH() : innerHeight;
+      const D = Math.max(innerWidth * 1.1, 2 * Math.min(j.y - 165, H - j.y - 34));   // o ingrediente do topo passa abaixo do menu
+      orbitEl.style.width = D.toFixed(0) + 'px';
+      // título menor, logo acima do pote
+      ingTitle.style.setProperty('top', Math.max(84, j.y - innerWidth * 0.34 - ingTitle.offsetHeight).toFixed(0) + 'px', 'important');
+    } else { orbitEl.style.width = ''; ingTitle.style.removeProperty('top'); }
   });
   // círculo de ingredientes gira com o scroll
   // ingredientes orbitam o pote sem parar; pausam no hover ou com um item aberto
   const orbitList = $('.orbit__list'); let orbitRot = 0, orbitHold = false;
+  const orbitChips = $$('.orbit .chip'); let autoK = -1, autoT = 0, lastAuto = -1;
+  window.__orbitAutoReset = () => { autoK = -1; lastAuto = -1; };
   orbitList.addEventListener('pointerenter', () => (orbitHold = true));
   orbitList.addEventListener('pointerleave', () => (orbitHold = false));
   gsap.ticker.add((t, dt) => {
-    if (innerWidth <= 900 || S.gather < 0.02 || S.sink > 0.99) return;   // só gira enquanto os ingredientes estão na tela
-    const isOpen = orbitList.querySelector('.chip[aria-expanded="true"]');
-    if (!orbitHold && !isOpen && !reduce) orbitRot = (orbitRot + dt * 0.006) % 360;
+    if (S.gather < 0.02 || S.sink > 0.99) return;   // só gira enquanto os ingredientes estão na tela
+    let isOpen = orbitList.querySelector('.chip[aria-expanded="true"]');
+    // celular: o ingrediente que chega embaixo, no meio, abre sozinho, fica um tempinho e fecha; o círculo segue girando
+    if (innerWidth <= 900 && !window.__orbitManual) {
+      const chips = orbitChips;
+      if (autoK >= 0) {
+        autoT -= dt;
+        if (autoT <= 0) { chips[autoK].setAttribute('aria-expanded', 'false'); lastAuto = autoK; autoK = -1; isOpen = null; }
+      } else if (!isOpen) {
+        [-135, -45, 135, 45].forEach((base, k) => {
+          const ang = ((base + orbitRot) % 360 + 360) % 360;
+          if (autoK < 0 && k !== lastAuto && Math.abs(ang - 90) < 1.2) { autoK = k; autoT = 2800; chips[k].setAttribute('aria-expanded', 'true'); isOpen = chips[k]; }
+        });
+      }
+    }
+    if (!orbitHold && !isOpen && !reduce) orbitRot = (orbitRot + dt * (innerWidth <= 900 ? 0.011 : 0.006)) % 360;   // no celular gira um pouco mais rápido: um ingrediente passa por baixo a cada ~8 s
     orbitList.style.setProperty('--rot', orbitRot.toFixed(2) + 'deg');
   });
+  // celular: ao abrir um ingrediente, o círculo gira até ele ficar embaixo, no centro (o cartão não fica cortado na lateral)
+  window.__orbitFocus = (k) => {
+    const base = [-135, -45, 135, 45][k]; if (base === undefined) return;
+    const d = ((((90 - base) - orbitRot) % 360) + 540) % 360 - 180, o = { v: orbitRot };
+    gsap.to(o, { v: orbitRot + d, duration: 0.9, ease: 'power3.inOut', onUpdate: () => { orbitRot = ((o.v % 360) + 360) % 360; orbitList.style.setProperty('--rot', orbitRot.toFixed(2) + 'deg'); } });
+  };
 
   // cards de linhas
   gsap.from('.prow', { y: 60, autoAlpha: 0, stagger: 0.08, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.plist', start: 'top 85%' } });
@@ -368,9 +394,7 @@ function buildScroll() {
   gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.pro', start: 'top bottom', end: 'bottom top', scrub: 1.5 } })
     .to({}, { duration: 1 }, 0);
   // contorno "Passo / Único": entra com o scroll (cada palavra de um lado) e sai com ele
-  gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.pro', start: 'top bottom', end: 'top top', scrub: 0.8 } })
-    .fromTo('.pro__marquee p:first-child span', { xPercent: -110 }, { xPercent: 0, ease: 'power2.out' }, 0)
-    .fromTo('.pro__marquee p:last-child span', { xPercent: 110 }, { xPercent: 0, ease: 'power2.out' }, 0);
+  // (o movimento das palavras é um só, contínuo, criado junto com o zoom abaixo)
   if (false) gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.pro', start: 'top top', end: '+=100%', scrub: 0.8 } })
     .to('.pro__marquee p:first-child span', { xPercent: 110, ease: 'power2.in' }, 0)
     .to('.pro__marquee p:last-child span', { xPercent: -110, ease: 'power2.in' }, 0);
@@ -378,13 +402,16 @@ function buildScroll() {
   ScrollTrigger.matchMedia({ '(min-width: 0px)': () => {   // zoom no frasco também no celular
     const z = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.pro', start: 'bottom bottom', end: '+=80%', pin: true, pinSpacing: true, scrub: 0.6, invalidateOnRefresh: true } })
       .to('.pro__content', { autoAlpha: 0, duration: 0.25 }, 0)
-      .to('.pro__marquee p:first-child span', { xPercent: 110, duration: 0.45, ease: 'power2.in' }, 0)
-      .to('.pro__marquee p:last-child span', { xPercent: -110, duration: 0.45, ease: 'power2.in' }, 0)
       .to(B, { scale: 9, y: -4.6, rotY: 0, duration: 1, ease: 'power2.in' }, 0)
       .to('.pro__flash', { opacity: 1, duration: 0.22, ease: 'power1.in' }, 0.62)
       // a próxima parte nasce de dentro do branco, já no lugar
       .fromTo('.rail__pin', { autoAlpha: 0, scale: 0.84 }, { autoAlpha: 1, scale: 1, duration: 0.2, ease: 'power3.out' }, 0.8);
-    return () => z.scrollTrigger && z.scrollTrigger.kill();
+    // "Passo" atravessa para a direita e "Único" para a esquerda num movimento só, do momento em que a seção
+    // aparece até o fim do zoom: nunca para e nunca volta ao início
+    const m = gsap.timeline({ defaults: { ease: 'none' }, scrollTrigger: { trigger: '.pro', start: 'top bottom', end: () => z.scrollTrigger.end, scrub: 0.8, invalidateOnRefresh: true } })
+      .fromTo('.pro__marquee p:first-child span', { xPercent: -95 }, { xPercent: 95 }, 0)
+      .fromTo('.pro__marquee p:last-child span', { xPercent: 95 }, { xPercent: -95 }, 0);
+    return () => { z.scrollTrigger && z.scrollTrigger.kill(); m.scrollTrigger && m.scrollTrigger.kill(); };
   } });
   gsap.from('.pro__copy > *, .pro__specs div', { y: 30, autoAlpha: 0, stagger: 0.08, duration: 1, ease: 'expo.out', scrollTrigger: { trigger: '.pro__content', start: 'top 90%' } });
 
@@ -409,7 +436,8 @@ function buildScroll() {
     gsap.fromTo('.rail__ghost span', { xPercent: 0 }, { xPercent: -40, ease: 'none', scrollTrigger: { trigger: '.rail', start: 'top bottom', end: () => '+=' + (dist() + innerHeight * 2), scrub: 1.2, invalidateOnRefresh: true } });
     // carrossel em arco: cada cartão gira em perspectiva conforme a posição na tela; a velocidade abre o espaçamento
     { const cards = $$('.card'); let vs = 0, hov = null, act = null;
-      cards.forEach((c) => { c.addEventListener('pointerenter', () => (hov = c)); c.addEventListener('pointerleave', () => { if (hov === c) hov = null; }); });
+      // hover com uma pequena espera: o destaque só troca quando o mouse para sobre o cartão (sem trocas secas no caminho)
+      let hovT = 0; cards.forEach((c) => { c.addEventListener('pointerenter', () => { clearTimeout(hovT); hovT = setTimeout(() => (hov = c), 130); }); c.addEventListener('pointerleave', () => { clearTimeout(hovT); if (hov === c) hovT = setTimeout(() => { if (hov === c) hov = null; }, 160); }); });
       const railSec = $('.rail');
       gsap.ticker.add(() => {
         { const rr = railSec.getBoundingClientRect(); if (rr.bottom < -50 || rr.top > innerHeight + 50) return; }   // fora da tela: não calcula nada
@@ -530,7 +558,7 @@ $$('.glass').forEach((g) => {
 });
 // cartões de ingredientes no celular: passam fechados com a rolagem; tocar abre (como o clique no computador)
 let mobCards = null;
-ScrollTrigger.matchMedia({ '(max-width: 900px)': () => {
+if (false) ScrollTrigger.matchMedia({ '(max-width: 900px)': () => {   // (antigo carrossel de cartões do celular, substituído pelo círculo)
   const list = $('.orbit__list'), dots = $$('.orbit__hint i'), chips = $$('.orbit .chip'), n = chips.length;
   let cur = -1, idx = -1, opened = -1;
   const place = () => {
@@ -550,10 +578,64 @@ ScrollTrigger.matchMedia({ '(max-width: 900px)': () => {
 $$('.chip').forEach((c) => c.addEventListener('click', () => {
   if (mobCards) { mobCards.tap([...document.querySelectorAll('.orbit .chip')].indexOf(c)); return; }
   const open = c.getAttribute('aria-expanded') !== 'true';
+  // celular: tocar assume o controle (o automático pausa enquanto há um aberto por toque)
+  if (innerWidth <= 900) { window.__orbitManual = open; window.__orbitAutoReset && window.__orbitAutoReset(); }
   $$('.chip').forEach((o) => o.setAttribute('aria-expanded', 'false'));
   c.setAttribute('aria-expanded', String(open));
   document.querySelector('.ingredients').classList.toggle('has-open', open);   // cartão aberto fica na frente do pote
+  if (open && innerWidth <= 900 && window.__orbitFocus) window.__orbitFocus([...document.querySelectorAll('.orbit .chip')].indexOf(c));
 }));
+
+/* ---------------- Folhas do hero reagem ao mouse ----------------
+   a folha não sai do lugar: só balança um pouco em volta do cabinho (preso na borda), como uma folha pendurada */
+{ const leaves = $$('.hero__leaves .leaf').map((el) => ({ el, a: 0, va: 0, base: null, dir: el.closest('.leafg--l') ? 1 : -1 }));
+  let mx = -1e4, my = -1e4, pmx = 0, pmy = 0, isMouse = false;
+  addEventListener('pointermove', (e) => { isMouse = e.pointerType === 'mouse'; mx = e.clientX; my = e.clientY; }, { passive: true });
+  document.addEventListener('mouseleave', () => { mx = my = -1e4; });
+  gsap.ticker.add(() => {
+    if (!leaves.length || reduce) return;
+    const mvx = mx - pmx, mvy = my - pmy; pmx = mx; pmy = my;
+    const moving = isMouse && Math.abs(mvx) + Math.abs(mvy) > 0.5 && Math.abs(mvx) + Math.abs(mvy) < 300;
+    leaves.forEach((L) => {
+      if (L.base === null) { const r = parseFloat(getComputedStyle(L.el).rotate); L.base = isNaN(r) ? 0 : r; }
+      if (moving) {
+        const r = L.el.getBoundingClientRect();
+        if (r.bottom > 0 && mx > r.left && mx < r.right && my > r.top && my < r.bottom) {
+          // mouse descendo empurra a ponta para baixo; subindo, para cima; de lado, um empurrãozinho conforme a altura do cursor
+          const side = my < r.top + r.height / 2 ? 1 : -1;
+          L.va += L.dir * Math.max(-0.35, Math.min(0.35, mvy * 0.012 + side * Math.abs(mvx) * 0.006));
+        }
+      }
+      // mola bem suave (balança devagar e para)
+      L.va += -L.a * 0.018; L.va *= 0.95; L.a += L.va;
+      L.a = Math.max(-4.5, Math.min(4.5, L.a));
+      if (Math.abs(L.a) + Math.abs(L.va) > 0.004) L.el.style.setProperty('rotate', (L.base + L.a).toFixed(3) + 'deg', 'important');
+      else if (L.el.style.rotate) L.el.style.removeProperty('rotate');
+    });
+  });
+}
+
+/* ---------------- Acessibilidade: ícone ao lado do idioma abre o painel ---------------- */
+{ const btn = $('.a11y-btn'), panel = $('.a11y-panel');
+  const show = (o) => { btn.setAttribute('aria-expanded', String(o)); panel.classList.toggle('is-open', o); };
+  btn.addEventListener('click', (e) => { e.stopPropagation(); show(btn.getAttribute('aria-expanded') !== 'true'); });
+  document.addEventListener('pointerdown', (e) => { if (!e.target.closest('.a11y')) show(false); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') show(false); });
+  addEventListener('scroll', () => { if (header.classList.contains('is-compact')) show(false); }, { passive: true });
+}
+/* ---------------- Acessibilidade (menu) ---------------- */
+{ const KEY = 'lmb-a11y'; let st = {}; try { st = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) {}
+  const btns = $$('.a11y-opt');
+  const sync = () => btns.forEach((b) => b.setAttribute('aria-pressed', String(!!st[b.dataset.a11y])));
+  sync();
+  btns.forEach((b) => b.addEventListener('click', () => {
+    const k = b.dataset.a11y; st[k] = !st[k];
+    try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {}
+    if (k === 'motion') { location.reload(); return; }   // menos movimento: recarrega já sem as animações contínuas
+    document.documentElement.classList.toggle('a11y-' + k, !!st[k]); sync();
+    ScrollTrigger.refresh();
+  }));
+}
 
 /* ---------------- Voltar ao topo (com anel de progresso) ---------------- */
 const toTop = $('.to-top'), ring = $('.to-top__ring');

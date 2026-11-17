@@ -97,7 +97,8 @@ export function createScene(canvas, { onProgress, onLoad } = {}) {
   const draco = new DRACOLoader().setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/libs/draco/gltf/');
   const loader = new GLTFLoader().setDRACOLoader(draco);
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
-  loader.load('assets/3d/bottle.glb', (gltf) => {
+  // o frasco só baixa quando a pessoa está chegando perto do Passo Único (abre o site mais rápido)
+  const loadBottle = () => loader.load('assets/3d/bottle.glb', (gltf) => {
     model = gltf.scene;
     model.traverse((o) => {
       if (!o.isMesh) return;
@@ -116,6 +117,7 @@ export function createScene(canvas, { onProgress, onLoad } = {}) {
     points.position.y = -1.26;
     onLoad && onLoad();
   }, (e) => { if (e.total) onProgress && onProgress(e.loaded / e.total); });
+  { const io = new IntersectionObserver(([en]) => { if (en.isIntersecting) { io.disconnect(); loadBottle(); } }, { rootMargin: '250% 0px' }); io.observe(canvas); }
 
   // ---------- Mouse (parallax suave) ----------
   const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
