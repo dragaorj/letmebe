@@ -1364,3 +1364,29 @@ html:has(.header.is-compact) .mnav__a11y{display:block}
 .header__logo svg path{transition:fill .35s var(--ease)}
 .header .header__logo:hover svg path{fill:var(--verde)!important}
 .header.on-dark .header__logo:hover svg path{fill:#A7DED4!important}
+/* Essência no notebook: a foto respeita a altura da tela e o lado direito fica junto, sem vão no meio */
+@media (min-width:901px){
+  .essence .essence__media .frame--tall{max-height:min(80vh,820px)}
+  .essence .essence__media .frame--tall img{height:100%!important;object-fit:cover}
+  .ess-side{justify-content:center!important;gap:clamp(36px,6.5vh,80px)!important}
+}
+
+/* cartão de ingrediente aberto: tudo em volta fica embaçado para dar foco nele */
+.stage,.ingredients__title,.orbit__ring,.orbit__track,.orbit .chip{transition:filter .6s var(--ease),opacity .6s var(--ease)}
+.ing-focus .stage{filter:blur(9px)}
+.ing-focus .ingredients__title{filter:blur(6px);opacity:.55}
+.ing-focus .orbit__ring,.ing-focus .orbit__track{filter:blur(4px);opacity:.5}
+.ing-focus .orbit .chip:not([aria-expanded="true"]){filter:blur(5px);opacity:.45}
+.ing-focus .orbit .chip[aria-expanded="true"]{z-index:10}
+/* Linhas: o destaque verde da linha também com cantos arredondados */
+.prow{border-radius:0}
+.prow::before{border-radius:22px}
+/* a seção das garotas fica por cima do Passo Único (transição do branco): não pode roubar os cliques */
+.rail{pointer-events:none}
+.rail__pin{pointer-events:auto}
+/* Passo Único (computador): especificações à esquerda, acima do texto e do botão */
+@media (min-width:761px){
+  .pro__content{grid-template-columns:minmax(0,400px) 1fr!important;row-gap:clamp(22px,4vh,40px)!important}
+  .pro__specs{grid-column:1!important;grid-row:1!important;width:100%;max-width:340px}
+  .pro__copy{grid-column:1!important;grid-row:2!important}
+}

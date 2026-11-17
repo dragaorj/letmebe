@@ -242,7 +242,7 @@ function buildScroll() {
     .to(root, { '--sky': '#ECECEA', duration: 0.6 }, 1.0)
   // 3 · Ingredientes: céu verde profundo, abacates formam o arco
     .to(root, { '--sky': '#D1D5BB', '--glow': 0.6, duration: 0.5 }, 3.1 + SH)
-    .to(S, { gather: 1, scale: innerWidth <= 760 ? 1 : 0.86, y: innerWidth <= 760 ? 0.35 : 0.25, shadow: 0, orbit: 1, duration: 1.5, ease: 'power1.inOut' }, 2.7 + SH)
+    .to(S, { gather: 1, scale: innerWidth <= 760 ? 1 : 0.86, y: innerWidth <= 760 ? 0.05 : 0.25, shadow: 0, orbit: 1, duration: 1.5, ease: 'power1.inOut' }, 2.7 + SH)
     .to(S, { rotY: 0.1 + TAU + 0.5, duration: 2.2 }, 3.1 + SH)
   // 4 · Textura: abacates recolhem, pote vira o creme para a câmera
     .to(S, { sink: 1, duration: MOB ? 1.2 : 1.1, ease: 'power1.inOut' }, (MOB ? 4.75 : 5.3) + SH)   // os abacates seguem no sentido horário e mergulham no pote, um a um   // celular: os abacates voltam para o pote enquanto os cartões passam
@@ -255,7 +255,7 @@ function buildScroll() {
 
   // chips de ingredientes
   gsap.from('.orbit__ring circle', { scale: 0.6, autoAlpha: 0, transformOrigin: '50% 50%', stagger: 0.12, duration: 1.6, ease: 'expo.out', scrollTrigger: { trigger: '.ingredients', start: 'top 30%' } });
-  gsap.from('.orbit__item .chip', { autoAlpha: 0, stagger: 0.12, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: '.ingredients', start: 'top 20%' } });
+  // (os itens aparecem junto com o círculo, pela opacidade do conjunto; sem animação própria que podia deixá-los invisíveis)
   // o texto circular acompanha o creme (centro, raio e perspectiva)
   const ringEl = $('.texture__ring'), texTitle = $('.texture__title'), ingTitle = $('.ingredients__title'), orbitBox = $('.orbit');
   // título da textura: as palavras sobem de trás de uma máscara (e descem ao sair da cena)
@@ -317,12 +317,13 @@ function buildScroll() {
   // ingredientes orbitam o pote sem parar; pausam no hover ou com um item aberto
   const orbitList = $('.orbit__list'); let orbitRot = 0, orbitHold = false;
   const orbitChips = $$('.orbit .chip'); let autoK = -1, autoT = 0, lastAuto = -1;
-  window.__orbitAutoReset = () => { autoK = -1; lastAuto = -1; };
+  window.__orbitAutoReset = (k) => { autoK = -1; lastAuto = k === undefined ? -1 : k; };
   orbitList.addEventListener('pointerenter', () => (orbitHold = true));
   orbitList.addEventListener('pointerleave', () => (orbitHold = false));
   gsap.ticker.add((t, dt) => {
     if (S.gather < 0.02 || S.sink > 0.99) return;   // só gira enquanto os ingredientes estão na tela
     let isOpen = orbitList.querySelector('.chip[aria-expanded="true"]');
+    root.classList.toggle('ing-focus', !!isOpen && S.gather > 0.5 && S.sink < 0.2);   // cartão aberto: o resto fica embaçado
     // celular: o ingrediente que chega embaixo, no meio, abre sozinho, fica um tempinho e fecha; o círculo segue girando
     if (innerWidth <= 900 && !window.__orbitManual) {
       const chips = orbitChips;
@@ -579,7 +580,7 @@ $$('.chip').forEach((c) => c.addEventListener('click', () => {
   if (mobCards) { mobCards.tap([...document.querySelectorAll('.orbit .chip')].indexOf(c)); return; }
   const open = c.getAttribute('aria-expanded') !== 'true';
   // celular: tocar assume o controle (o automático pausa enquanto há um aberto por toque)
-  if (innerWidth <= 900) { window.__orbitManual = open; window.__orbitAutoReset && window.__orbitAutoReset(); }
+  if (innerWidth <= 900) { window.__orbitManual = open; window.__orbitAutoReset && window.__orbitAutoReset([...document.querySelectorAll('.orbit .chip')].indexOf(c)); }
   $$('.chip').forEach((o) => o.setAttribute('aria-expanded', 'false'));
   c.setAttribute('aria-expanded', String(open));
   document.querySelector('.ingredients').classList.toggle('has-open', open);   // cartão aberto fica na frente do pote
@@ -636,6 +637,17 @@ $$('.chip').forEach((c) => c.addEventListener('click', () => {
     ScrollTrigger.refresh();
   }));
 }
+
+// cartão de ingrediente aberto: tocar ou clicar fora fecha (e o resto volta ao normal)
+document.addEventListener('pointerdown', (e) => {
+  const open = document.querySelector('.orbit .chip[aria-expanded="true"]');
+  if (!open || e.target.closest('.orbit .chip')) return;
+  const k = [...document.querySelectorAll('.orbit .chip')].indexOf(open);
+  open.setAttribute('aria-expanded', 'false');
+  document.querySelector('.ingredients').classList.remove('has-open');
+  window.__orbitManual = false; window.__orbitAutoReset && window.__orbitAutoReset(k);
+});
+addEventListener('keydown', (e) => { if (e.key === 'Escape') { const o = document.querySelector('.orbit .chip[aria-expanded="true"]'); if (o) { o.setAttribute('aria-expanded', 'false'); window.__orbitManual = false; } } });
 
 /* ---------------- Voltar ao topo (com anel de progresso) ---------------- */
 const toTop = $('.to-top'), ring = $('.to-top__ring');
