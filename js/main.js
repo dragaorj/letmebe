@@ -285,7 +285,10 @@ function buildScroll() {
     .to(S, { lidBack: 1, duration: 0.45 }, 7.7 + SH);   // pausa com o pote fechado e o botão "Obter agora" antes da próxima seção
   // header claro sobre o fundo escuro
   // menu claro sempre que o que está atrás dele for escuro (Passo Único e rodapé)
-  { const darks = [$('.pro'), $('.close__card')]; gsap.ticker.add(() => { const y = 40; header.classList.toggle('on-dark', darks.some((el) => { const r = el.getBoundingClientRect(); return r.top <= y && r.bottom >= y; })); }); }
+  { const darks = [$('.pro'), $('.close__card')], railPin = $('.rail__pin');
+    gsap.ticker.add(() => { const y = 40; header.classList.toggle('on-dark', darks.some((el) => {
+      if (el.classList.contains('pro') && railPin && +getComputedStyle(railPin).opacity > 0.5 && railPin.getBoundingClientRect().top <= y) return false;   // a seção clara dos cabelos já cobre o Passo Único
+      const r = el.getBoundingClientRect(); return r.top <= y && r.bottom >= y; })); }); }
 
   // chips de ingredientes
   gsap.from('.orbit__ring circle', { scale: 0.6, autoAlpha: 0, transformOrigin: '50% 50%', stagger: 0.12, duration: 1.6, ease: 'expo.out', scrollTrigger: { trigger: '.ingredients', start: 'top 30%' } });
@@ -327,6 +330,14 @@ function buildScroll() {
         const hb = (header.getBoundingClientRect().bottom || 70) + 10, free = innerHeight - hb;
         const groupH = (r.bottom - r.top) + gap + bh, dst = hb + Math.max(0, (free - groupH) / 2);
         want = (S.yAdj + (r.top - dst) / Math.max(1, r.pxPerUnit)) * ease01(S.lidBack);
+      } else if (innerWidth <= 760 && S.face > 0.6 && S.lidBack < 0.5) {
+        // celular, cena da textura: o pote nunca encosta no título (em qualquer altura de tela e idioma);
+        // se a borda do pote subir sobre as letras, ele desce o necessário
+        const jr = stage.jarRect(1.34), tb = texTitle.getBoundingClientRect().bottom;
+        if (jr && texTitle.offsetHeight) {
+          const need = (jr.top - (tb + 12)) / Math.max(1, jr.pxPerUnit);   // < 0: precisa descer
+          want = Math.min(0, S.yAdj + need) * Math.min(1, (S.face - 0.6) / 0.4);
+        }
       }
       S.yAdj += (want - S.yAdj) * 0.12;
       if (on) {
@@ -492,6 +503,11 @@ function buildScroll() {
   gsap.from('.essence__media .frame', { clipPath: 'inset(30% 0% 0% 0% round 28px)', y: 60, stagger: 0.12, duration: 1.4, ease: 'expo.out', scrollTrigger: { trigger: '.essence__media', start: 'top 85%' } });
   gsap.from('.essence__cols p', { y: 30, autoAlpha: 0, stagger: 0.1, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: '.essence__cols', start: 'top 85%' } });
 
+  // o pote 3D (fixo no fundo) some quando a seção seguinte já cobre a tela inteira; volta ao subir.
+  // Evita que ele apareça por trás de áreas transparentes mais abaixo (ex.: transição do Passo Único para os cabelos)
+  ScrollTrigger.create({ trigger: '.lines', start: 'top top', onEnter: () => (canvas.style.visibility = 'hidden'), onLeaveBack: () => (canvas.style.visibility = '') });
+  // fotos dos cabelos carregam antes de a seção chegar (sem atraso para a primeira foto aparecer)
+  ScrollTrigger.create({ trigger: '.pro', start: 'top 300%', once: true, onEnter: () => $$('.rail img').forEach((im) => { im.loading = 'eager'; if (im.decode) im.decode().catch(() => {}); }) });
   // profissional: frasco Passo Único em 3D
   const bottle = createBottle($('.pro__canvas'));
   const B = bottle.state;

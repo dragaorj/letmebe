@@ -496,13 +496,13 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
 
   // ponto mais baixo do pote (com a tampa) na tela: contorno do cilindro projetado
   const _b = new THREE.Vector3();
-  function jarRect() {
+  function jarRect(hTop = 1.52) {
     if (!jarModel) return null;
     jarModel.updateWorldMatrix(true, false);
     let minY = 1e9, maxY = -1e9;
     for (let i = 0; i < 16; i++) {
       const a = i / 16 * Math.PI * 2, x = Math.cos(a) * 1.02, z = Math.sin(a) * 1.02;
-      for (const y of [0, 1.52]) { const p = toPx(jarModel.localToWorld(_b.set(x, y, z))); minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y); }
+      for (const y of [0, hTop]) { const p = toPx(jarModel.localToWorld(_b.set(x, y, z))); minY = Math.min(minY, p.y); maxY = Math.max(maxY, p.y); }
     }
     // quantos pixels a tela anda por unidade de altura do pote (para centralizar por pixel)
     const w0 = jarRoot.getWorldPosition(new THREE.Vector3()), o = toPx(w0.clone()), u = toPx(w0.clone().add(_b.set(0, 1, 0)));
