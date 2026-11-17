@@ -7,6 +7,15 @@ def paths(name):
     return "".join(f'<path d="{d}"/>' for d in ps)
 html = (R / "tools/index.src.html").read_text(encoding="utf8")
 html = html.replace("{{LOGO_V}}", paths("logo-vertical")).replace("{{LOGO_H}}", paths("logo-horizontal"))
+# versão dos arquivos = soma do conteúdo: muda a cada alteração e força o navegador (celular) a baixar o novo
+import hashlib
+h = hashlib.sha1()
+for f in ["css/style.css", "js/main.js", "js/i18n.js", "js/stage3d.js", "js/scene.js", "js/perf.js", "js/studio.js", "assets/3d/jar.glb", "assets/3d/bottle.glb", "assets/3d/avocado.glb"]:
+    p = R / f
+    if p.exists(): h.update(p.read_bytes())
+ver = h.hexdigest()[:10]
+html = html.replace('href="css/style.css"', f'href="css/style.css?v={ver}"').replace('src="js/i18n.js"', f'src="js/i18n.js?v={ver}"').replace('src="js/main.js"', f'src="js/main.js?v={ver}"').replace('href="assets/3d/jar.glb"', f'href="assets/3d/jar.glb?v={ver}"')
+html = html.replace("</head>", f'<script>window.__V="{ver}"</script>\n</head>', 1)
 (R / "index.html").write_text(html, encoding="utf8")
 # favicon: o brilho da marca (o mesmo da logo) em verde, sobre fundo branco arredondado
 spark = re.findall(r'<path d="([^"]+)"', (R / "assets/brand/logo-vertical.svg").read_text(encoding="utf8"))[0]

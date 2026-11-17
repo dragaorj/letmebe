@@ -515,6 +515,18 @@ function buildScroll() {
 
   // cards de linhas
   gsap.from('.prow', { y: 60, autoAlpha: 0, stagger: 0.08, duration: 1.2, ease: 'expo.out', scrollTrigger: { trigger: '.plist', start: 'top 85%' } });
+  // linhas: um único destaque verde que desliza de uma linha para a outra (sem dois blocos pela metade)
+  { const list = $('.plist'), hl = document.createElement('li'); hl.className = 'plist__hl'; hl.setAttribute('aria-hidden', 'true'); list.prepend(hl);
+    let on = false;
+    $$('.plist .prow').forEach((row) => row.addEventListener('pointerenter', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      const li = row.parentElement, y = li.offsetTop, h = li.offsetHeight;
+      if (!on) { gsap.set(hl, { y, height: h, scaleY: 0.6 }); gsap.to(hl, { autoAlpha: 1, scaleY: 1, duration: 0.45, ease: 'expo.out', overwrite: true }); }
+      else gsap.to(hl, { y, height: h, autoAlpha: 1, scaleY: 1, duration: 0.5, ease: 'expo.out', overwrite: true });
+      on = true;
+    }));
+    list.addEventListener('pointerleave', () => { on = false; gsap.to(hl, { autoAlpha: 0, scaleY: 0.85, duration: 0.35, ease: 'power2.out', overwrite: true }); });
+  }
   // foto que segue o mouse sobre a lista de linhas (gira levemente conforme a velocidade)
   { const fl = $('.plist__float'), fi = fl && fl.querySelector('img'); let fx = innerWidth / 2, fy = innerHeight / 2, tx = fx, ty = fy, on = false;
     // decide a cada quadro o que está sob o cursor (o scroll tira a linha de baixo do mouse sem disparar 'leave')

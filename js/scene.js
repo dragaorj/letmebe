@@ -98,7 +98,7 @@ export function createScene(canvas, { onProgress, onLoad } = {}) {
   const loader = new GLTFLoader().setDRACOLoader(draco);
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
   // o frasco só baixa quando a pessoa está chegando perto do Passo Único (abre o site mais rápido)
-  const loadBottle = () => loader.load('assets/3d/bottle.glb', (gltf) => {
+  const loadBottle = () => loader.load('assets/3d/bottle.glb?v=' + (window.__V || ''), (gltf) => {
     model = gltf.scene;
     model.traverse((o) => {
       if (!o.isMesh) return;

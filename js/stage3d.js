@@ -170,7 +170,7 @@ export function createStage(canvas, { onProgress, onLoad } = {}) {
   }, rej));
   const aniso = renderer.capabilities.getMaxAnisotropy();
 
-  Promise.all([load('assets/3d/jar.glb', 0), load('assets/3d/avocado.glb', 1)]).then(([jarG, avoG]) => {
+  Promise.all([load('assets/3d/jar.glb?v=' + (window.__V || ''), 0), load('assets/3d/avocado.glb?v=' + (window.__V || ''), 1)]).then(([jarG, avoG]) => {
     jarModel = jarG.scene;
     jarModel.traverse((o) => {
       if (!o.isMesh) return;
